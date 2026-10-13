@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Una conoscenza, molte applicazioni · Architettura interattiva v5.5</title>
+<style>
+:root{--ink:#18322f;--muted:#5b746e;--paper:#f7f8f5;--green:#176e5d;--line:#dce5df;--shadow:0 24px 90px rgba(32,61,52,.13);--ease:cubic-bezier(.2,.8,.2,1)}
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden}body{font-family:Inter,"Segoe UI",system-ui,-apple-system,Arial,sans-serif;color:var(--ink);background:var(--paper)}button{font:inherit}button:focus-visible{outline:3px solid #49898b;outline-offset:5px}button[hidden],div[hidden],aside[hidden]{display:none!important}
+.app{position:relative;width:100vw;height:100vh;height:100dvh;overflow:hidden;background:radial-gradient(circle at 30% 45%,rgba(200,226,214,.52),transparent 37%),radial-gradient(circle at 88% 75%,rgba(206,215,230,.38),transparent 42%),#f9faf7}
+.app:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.4;background-image:radial-gradient(#b8cfc5 .7px,transparent .7px);background-size:26px 26px;mask-image:linear-gradient(to bottom,transparent,#000 25%,#000 85%,transparent)}
+.top{position:absolute;z-index:10;top:0;left:0;right:0;padding:23px clamp(20px,3.7vw,62px) 0;display:flex;align-items:flex-start;justify-content:space-between;gap:25px;pointer-events:none}.top>*{pointer-events:auto}.branding{max-width:min(760px,72vw)}.eyebrow{font-size:10px;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:#658178;margin-bottom:8px}.branding h1{font-size:clamp(21px,2.2vw,32px);letter-spacing:-.045em;line-height:1.08;margin:0;font-weight:760}.branding p{font-size:clamp(11px,1vw,13px);line-height:1.5;color:#6b8079;margin:8px 0 0;max-width:560px}
+.top-actions{display:flex;align-items:center;gap:9px;padding-top:8px}.chrome-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:40px;height:40px;padding:0 13px;border:1px solid #dbe4de;color:#4b665f;border-radius:13px;background:rgba(255,255,255,.88);box-shadow:0 4px 12px #1a41340c;cursor:pointer;white-space:nowrap;font-size:12px;font-weight:700;transition:background .15s,transform .15s}.chrome-button:hover{background:#fff;transform:translateY(-1px)}.chrome-button svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gov{position:absolute;z-index:8;top:115px;left:50%;transform:translateX(-50%);padding:0 12px;width:min(580px,calc(100% - 35px));min-height:55px;border:1px solid rgba(110,146,130,.27);background:rgba(255,255,255,.9);border-radius:17px;box-shadow:0 10px 44px #2445350d;display:flex;align-items:center;gap:12px;cursor:pointer;transition:transform .23s,border-color .23s;text-align:left}.gov:hover{transform:translateX(-50%) translateY(-2px);border-color:#9cbbb0}.gov .gmark{margin-left:12px;flex:0 0 32px;width:32px;height:32px;border-radius:11px;background:#e6f2eb;display:grid;place-items:center;color:var(--green);font-weight:850;font-size:17px}.gov .gt{min-width:0;display:flex;flex-direction:column;gap:3px;flex:1}.gov strong{font-size:12px;letter-spacing:-.02em}.gov small{font-size:10px;color:#798a81}.gov .garr{font-size:17px;margin:0 13px 0 3px;color:#63867a}
+.crumb{position:absolute;z-index:7;top:188px;left:clamp(20px,3.7vw,62px);display:flex;align-items:center;gap:8px;pointer-events:auto;max-width:calc(100% - 45px)}.crumb button{border:0;background:transparent;cursor:pointer;color:#6d887e;font-size:11px;font-weight:720;padding:5px 4px}.crumb .current{color:#284940}.crumb .sep{color:#a7bcb1;font-size:12px}
+.stage{position:absolute;inset:0;overflow:hidden;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;outline:none}.stage.is-dragging{cursor:grabbing}.world{width:1880px;height:1160px;position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform;transition:transform 1.25s cubic-bezier(.2,.74,.18,1),opacity .28s ease}.world.swapping{opacity:0}.wires{position:absolute;inset:0;width:1880px;height:1160px;overflow:visible;pointer-events:none}.wires path{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}.wires .direct{stroke:#65a695}.wires .optional{stroke:#be9e61;stroke-dasharray:8 10}.wires .webline{stroke:#8c9fbf}.wires .dialog{stroke:#a3bdb3;stroke-dasharray:6 10}.wires .internal{stroke:#b1c8bd;stroke-width:1.9;stroke-dasharray:6 9}.wires .hint{fill:#7a8e86;font:650 14px Inter,Arial,sans-serif;letter-spacing:.01em}.wires .amber-hint{fill:#af9054}
+.orb{--core:#1e806c;--pale:#ebf6f0;--edge:#a8cebd;position:absolute;width:var(--diameter);height:var(--diameter);margin:0;padding:24px;border:1.5px solid var(--edge);border-radius:50%;background:radial-gradient(circle at 34% 25%,#fff 1%,var(--pale) 77%,#e6ebe6 130%);color:#254239;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 9px 42px color-mix(in srgb,var(--core),transparent 91%),inset 0 1px 0 #ffffffef;transform:translate(-50%,-50%) scale(1) rotate(var(--tilt,0deg));transition:transform .7s cubic-bezier(.22,.65,.27,1),box-shadow .35s,border-color .35s,filter .35s,opacity .2s;white-space:normal}.orb:before{content:"";position:absolute;inset:-10px;border:1px solid color-mix(in srgb,var(--core),transparent 83%);border-radius:inherit;pointer-events:none;transition:inset .35s,opacity .35s;opacity:.7}.orb:hover,.orb.is-focused{transform:translate(-50%,-50%) scale(1.055) rotate(var(--tilt,0deg));border-color:var(--core);box-shadow:0 22px 62px color-mix(in srgb,var(--core),transparent 80%),inset 0 1px 0 #fff}.orb:hover:before,.orb.is-focused:before{inset:-15px;opacity:1}.orb.hero{--core:#0d7964;--pale:#d8efe5;--edge:#77b9a4;box-shadow:0 30px 75px #3c9a7950,0 0 0 14px #8bbfae11}.orb.hero:before{inset:-22px;border:1.4px solid #58a58c46}.orb.hero:after{content:"";position:absolute;inset:-45px;border:1px solid #5d9d8b28;border-radius:50%;z-index:-1}.orb.hero:hover,.orb.hero.is-focused{box-shadow:0 40px 88px #3c9a7966,0 0 0 14px #8bbfae15}.orb.campaign{--core:#a98549;--pale:#f6efe1;--edge:#d4bd92;border-style:dashed;border-width:2px}.orb.editorial{--core:#8a6aa8;--pale:#f0e9f6;--edge:#c4aed8}.orb.site{--core:#6184bc;--pale:#e7eef8;--edge:#b4c7df}.orb.hfarm{--core:#628a85;--pale:#edf5f4;--edge:#c1d5d0}.orb.neutral{--core:#739789;--pale:#f2f6f2;--edge:#bed2c5}.orb.governance{--core:#516c81;--pale:#eaf1f7;--edge:#a3bbce}.orb .orb-kicker{font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;color:var(--core)}.orb .orb-name{font-size:clamp(13px,1.38vw,22px);line-height:1.15;font-weight:760;letter-spacing:-.04em;max-width:100%;overflow-wrap:normal}.orb.hero .orb-name{font-size:29px;line-height:1.08;max-width:280px}.orb .orb-desc{font-size:11.5px;line-height:1.45;color:#657b71;max-width:220px}.orb.hero .orb-desc{font-size:13px;max-width:240px}.orb .orb-tag{font-size:9.5px;font-weight:750;line-height:1.3;color:var(--core);padding:6px 10px;border:1px solid color-mix(in srgb,var(--core),transparent 75%);border-radius:999px;background:#ffffff75;max-width:92%}.orb .orb-tag--long{font-size:9px;max-width:190px}.orb.child .orb-name{font-size:18px}.orb.child .orb-desc{font-size:11.5px}.orb.hub{background:radial-gradient(circle at 35% 25%,#fff,var(--pale) 78%)}.orb.hub .orb-name{font-size:24px}.orb.hub:before{inset:-14px}.orb.compact .orb-name{font-size:16px}.orb.compact .orb-kicker{font-size:9px}.orb.compact .orb-desc{font-size:10px}.orb.doubt{--core:#b17c60;--edge:#debba8;--pale:#fcf1e8}.orb.ink{--core:#415d59;--edge:#abc3bd;--pale:#eff4f1}.orb .click-cue{font-size:10px;color:var(--core);opacity:0;transform:translateY(2px);transition:opacity .2s,transform .2s}.orb:hover .click-cue,.orb.is-focused .click-cue{opacity:.9;transform:none}
+.map-note{position:absolute;z-index:5;right:clamp(22px,4vw,66px);top:211px;text-transform:uppercase;letter-spacing:.2em;font-weight:750;font-size:9px;color:#8ca499;pointer-events:none}.status{position:absolute;z-index:7;left:clamp(20px,3.7vw,62px);bottom:24px;display:flex;align-items:stretch;gap:12px;max-width:min(540px,calc(100vw - 40px));pointer-events:none}.focus-info{min-height:85px;width:330px;border:1px solid #dce6df;background:#fffffff1;backdrop-filter:blur(14px);box-shadow:0 8px 38px #284d3815;border-radius:17px;padding:15px 18px;display:flex;flex-direction:column;gap:5px}.focus-info strong{font-size:14px;line-height:1.2}.focus-info p{font-size:11px;line-height:1.5;color:#61746c;margin:0}.micro-instr{align-self:flex-end;color:#638077;font-size:10px;line-height:1.5;padding:9px 0;white-space:nowrap}.controls{position:absolute;z-index:7;bottom:25px;right:clamp(20px,3.7vw,62px);display:flex;align-items:center;gap:6px}.controls button{border:1px solid #d5e3d9;width:39px;height:39px;border-radius:12px;background:#fffffff0;color:#526e63;font-size:18px;cursor:pointer;display:grid;place-items:center;box-shadow:0 5px 24px #243e3410}.controls button:hover{border-color:#8fbbaa;background:white}.controls .wide{width:auto;padding:0 12px;font-size:11px;font-weight:750}.tagline{position:absolute;bottom:126px;left:50%;transform:translateX(-50%);pointer-events:none;font-size:10px;color:#92a29b;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+.info-panel{position:absolute;z-index:9;right:clamp(18px,3.7vw,61px);top:50%;transform:translateY(-43%);width:min(340px,calc(100vw - 36px));max-height:min(70dvh,600px);overflow-y:auto;background:rgba(255,255,255,.96);border:1px solid #dce7de;box-shadow:var(--shadow);border-radius:22px;padding:26px;backdrop-filter:blur(15px);animation:panel-in .27s var(--ease)}@keyframes panel-in{from{opacity:0;transform:translate(10px,-41%)}to{opacity:1;transform:translate(0,-43%)}}.info-panel .topline{color:#7e9488;text-transform:uppercase;font-size:10px;font-weight:800;letter-spacing:.18em}.info-panel h2{font-size:26px;line-height:1.1;letter-spacing:-.045em;margin:13px 22px 13px 0}.info-panel p{font-size:13px;line-height:1.65;color:#62776e;margin:0 0 12px}.info-panel .panel-rule{height:1px;background:#dfe9e2;margin:20px 0}.info-panel .technical{font-size:11px;color:#7d9085}.panel-close{position:absolute;top:17px;right:18px;border:0;background:#edf2ee;width:30px;height:30px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;color:#486b5b}.panel-link{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:12px;width:100%;font-size:12px;font-weight:730;background:#f1f6f2;color:#235c4d;border:1px solid #d3e5d9;border-radius:11px;padding:12px 13px;cursor:pointer;margin:7px 0}.panel-link:hover{background:#e5f2e9}.panel-mini{font-size:11px;line-height:1.5;color:#829087}.info-panel .notice{display:inline-block;padding:7px 10px;background:#fbf5e8;color:#987641;border-radius:9px;font-size:10px;font-weight:750;line-height:1.4}
+.dialog-help{position:absolute;z-index:30;inset:0;background:#12261ca8;display:grid;place-items:center;padding:15px;backdrop-filter:blur(7px)}.help-card{max-width:460px;width:100%;background:#fff;border-radius:22px;padding:28px 32px;box-shadow:0 25px 80px #102a2250;position:relative}.help-card h2{font-size:24px;margin:0 0 16px}.help-card p{font-size:13px;color:#566f62;line-height:1.6}.help-card kbd{font:600 11px ui-monospace,monospace;border:1px solid #dae7dd;border-radius:6px;padding:3px 6px;background:#f5f8f4;color:#285e4a}.help-close{position:absolute;right:15px;top:15px;background:#eff4f0;border:0;border-radius:50%;height:32px;width:32px;cursor:pointer;font-size:18px}.mode-toggle{display:flex;align-items:center;gap:8px;margin-top:16px;font-size:12px;color:#456458;cursor:pointer}.mode-toggle input{accent-color:#20775d}
+@media(max-width:900px){.top{padding:19px 20px 0;gap:7px}.top-actions{padding:0}.branding h1{font-size:23px}.branding p{font-size:11px;max-width:470px}.gov{top:115px}.crumb{top:184px;left:18px}.map-note{display:none}.status{bottom:17px;left:18px}.micro-instr{display:none}.controls{bottom:18px;right:18px}.focus-info{width:min(265px,calc(100vw - 205px));min-height:82px;padding:13px 15px}.focus-info strong{font-size:12px}.focus-info p{font-size:10px}.tagline{display:none}.info-panel{top:auto;bottom:115px;right:18px;transform:none;max-height:58vh}.info-panel h2{font-size:22px}@keyframes panel-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}}
+@media(max-width:650px){.branding{max-width:calc(100vw - 90px)}.branding h1{font-size:20px}.branding p{display:none}.gov{top:92px;min-height:52px}.gov strong{font-size:11px}.gov small{font-size:9px}.crumb{top:153px}.top-actions .label-btn{display:none}.top-actions .chrome-button{padding:0;width:35px;height:35px}.status{max-width:calc(100vw - 35px);bottom:74px}.focus-info{width:min(340px,calc(100vw - 35px));min-height:65px}.controls{bottom:17px;left:18px;right:auto}.controls button{height:38px;width:38px}.controls .wide{width:auto}.info-panel{left:18px;right:18px;width:auto;bottom:124px;max-height:53vh}.orb .orb-name{font-size:19px}}
+@media(prefers-reduced-motion:reduce){.world,.orb,.chrome-button,.info-panel,.gov{transition:none!important;animation:none!important}}
+.motion-slider{margin:8px 0 16px;padding:13px 14px;border:1px solid #dbe7dd;border-radius:13px;background:#f4f8f4}.motion-slider label{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:12px;font-weight:720;color:#345c4d}.motion-slider output{font-variant-numeric:tabular-nums;color:#176e5d}.motion-slider input{width:100%;accent-color:#24866e;cursor:pointer;margin:13px 0 6px}.motion-slider>span{display:flex;justify-content:space-between;font-size:10px;color:#81958a}
+
+/* V2: continuità cromatica di progetto in ogni livello di zoom. */
+.app{--sceneCore:#0d7964;--scenePale:#e4f4ea}
+.app[data-theme="kb"]{--sceneCore:#0d7964;--scenePale:#e4f4ea}
+.app[data-theme="campaign"]{--sceneCore:#a98549;--scenePale:#f9f1e2}
+.app[data-theme="editorial"]{--sceneCore:#896aa8;--scenePale:#f2ebf8}
+.app[data-theme="site"]{--sceneCore:#6184bc;--scenePale:#eaf1fb}
+.app[data-theme="governance"]{--sceneCore:#516c81;--scenePale:#eaf1f7}
+.app[data-theme="hfarm"]{--sceneCore:#628a85;--scenePale:#ebf5f3}
+.app[data-theme="kb"] .wires .internal,.app[data-theme="kb"] .wires .progress{stroke:#67a796}
+.app[data-theme="editorial"] .wires .internal,.app[data-theme="editorial"] .wires .progress{stroke:#aa8ac6}
+.app[data-theme="campaign"] .wires .internal,.app[data-theme="campaign"] .wires .progress{stroke:#c4a26d}
+.app[data-theme="site"] .wires .internal,.app[data-theme="site"] .wires .progress{stroke:#97afd6}
+.app[data-theme="governance"] .wires .internal,.app[data-theme="governance"] .wires .progress{stroke:#93adbf}
+.app[data-theme="hfarm"] .wires .internal,.app[data-theme="hfarm"] .wires .progress{stroke:#9ab9b1}
+.wires .progress{stroke-width:3.1;stroke-dasharray:none}
+.info-panel{border-top:4px solid var(--sceneCore)}
+.info-panel .topline{color:var(--sceneCore)}
+.panel-link{background:var(--scenePale);border-color:color-mix(in srgb,var(--sceneCore),white 75%);color:var(--sceneCore)}
+.panel-link:hover{background:color-mix(in srgb,var(--scenePale),var(--sceneCore) 10%)}
+.focus-info{border-left:4px solid var(--sceneCore)}
+.crumb .current{color:var(--sceneCore)}
+.orb.hub{box-shadow:0 24px 65px color-mix(in srgb,var(--core),transparent 84%),inset 0 1px 0 #fff}
+.orb.hub:hover,.orb.hub.is-focused{box-shadow:0 32px 80px color-mix(in srgb,var(--core),transparent 77%),inset 0 1px 0 #fff}
+.route-dock{position:absolute;z-index:7;bottom:83px;right:clamp(20px,3.7vw,62px);width:min(420px,calc(100vw - 40px));padding:12px 14px 13px;background:#fffffff0;border:1px solid #dce6df;border-left:4px solid var(--sceneCore);border-radius:14px;box-shadow:0 7px 27px #234f3c15;backdrop-filter:blur(14px);pointer-events:auto}
+.route-dock strong{display:block;color:var(--sceneCore);font-size:10px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.route-actions{display:flex;flex-wrap:wrap;gap:6px}
+.route-actions button{border:1px solid color-mix(in srgb,var(--sceneCore),white 70%);border-radius:999px;background:var(--scenePale);color:var(--sceneCore);padding:7px 10px;font-size:10.5px;font-weight:720;cursor:pointer;line-height:1.25;white-space:normal}
+.route-actions button:hover{filter:brightness(.97);transform:translateY(-1px)}
+@media(max-width:900px){.route-dock{bottom:117px;right:18px;padding:10px 12px;width:min(365px,calc(100vw - 36px))}}
+@media(max-width:650px){.route-dock{bottom:161px;right:18px;left:18px;width:auto;padding:9px 11px}.route-actions button{font-size:9px;padding:6px 8px}.route-dock strong{margin-bottom:6px;font-size:9px}}
+
+/* V3: i componenti strutturali del progetto sono moduli architetturali, non argomenti-circoli. */
+.orb.component{height:152px;min-height:152px;padding:15px 19px;border-radius:24px;gap:8px;box-shadow:0 12px 34px color-mix(in srgb,var(--core),transparent 91%),inset 0 1px 0 #fff;background:linear-gradient(146deg,#fff 0%,var(--pale) 100%);border-width:1.7px;text-align:center}
+.orb.component:before{inset:-6px;border-radius:29px}
+.orb.component:after{display:none}
+.orb.component .orb-name{font-size:19px;line-height:1.15;font-weight:760;letter-spacing:-.025em}
+.orb.component .orb-desc{font-size:11px;line-height:1.35;max-width:100%;color:#57766b}
+.orb.component .orb-tag{padding:4px 7px;font-size:9px}
+.orb.component .click-cue{display:none}
+.orb.component:hover,.orb.component.is-focused{box-shadow:0 18px 51px color-mix(in srgb,var(--core),transparent 78%),inset 0 1px 0 #fff}
+.app[data-theme="kb"] .route-dock{border-color:#b7d8ca;border-left-color:#0d7964}
+@media(max-width:650px){.orb.component .orb-name{font-size:18px}}
+
+/* V4.1: lo zoom conserva un alone cromatico tenue dell'identita del progetto, anche negli approfondimenti. */
+.app{transition:background 1.1s cubic-bezier(.2,.8,.2,1)}
+.app[data-theme="map"]{--sceneCore:#176e5d;--scenePale:#e4f4ea;background:radial-gradient(circle at 30% 45%,rgba(200,226,214,.52),transparent 37%),radial-gradient(circle at 88% 75%,rgba(206,215,230,.38),transparent 42%),#f9faf7}
+.app[data-theme="kb"]{background:radial-gradient(ellipse at 32% 34%,rgba(25,128,94,.095),transparent 61%),radial-gradient(ellipse at 84% 81%,rgba(25,128,94,.035),transparent 52%),#f9fcfa}
+.app[data-theme="governance"]{background:radial-gradient(ellipse at 32% 34%,rgba(80,111,146,.090),transparent 61%),radial-gradient(ellipse at 83% 82%,rgba(80,111,146,.035),transparent 52%),#fafbfd}
+.app[data-theme="editorial"]{background:radial-gradient(ellipse at 32% 34%,rgba(145,99,178,.090),transparent 61%),radial-gradient(ellipse at 83% 82%,rgba(145,99,178,.037),transparent 52%),#fcfafd}
+.app[data-theme="campaign"]{background:radial-gradient(ellipse at 32% 34%,rgba(178,141,77,.105),transparent 61%),radial-gradient(ellipse at 83% 82%,rgba(178,141,77,.038),transparent 52%),#fdfcf9}
+.app[data-theme="site"]{background:radial-gradient(ellipse at 32% 34%,rgba(76,121,192,.090),transparent 61%),radial-gradient(ellipse at 83% 82%,rgba(76,121,192,.035),transparent 52%),#fafcff}
+.app[data-theme="hfarm"]{background:radial-gradient(ellipse at 32% 34%,rgba(80,137,129,.085),transparent 61%),radial-gradient(ellipse at 83% 82%,rgba(80,137,129,.035),transparent 52%),#f9fcfb}
+.app:not([data-theme="map"]) .branding h1{color:#1a3531}
+.app:not([data-theme="map"]) .eyebrow{color:var(--sceneCore)}
+.app:not([data-theme="map"]) .branding p{color:#617970}
+.app:not([data-theme="map"]) .map-note,.app:not([data-theme="map"]) .tagline{color:#80958a}
+.app:not([data-theme="map"]) .crumb button{color:#647b73}
+.app:not([data-theme="map"]) .crumb .current{color:var(--sceneCore)}
+.app:not([data-theme="map"]) .crumb .sep{color:#a8bbb2}
+.app:not([data-theme="map"]) .micro-instr{color:#638077}
+.app:not([data-theme="map"]):before{opacity:.26;background-image:radial-gradient(#a8c5b7 .7px,transparent .7px)}
+ .app:not([data-theme="map"]) .orb{box-shadow:0 13px 48px color-mix(in srgb,var(--core),transparent 89%),inset 0 1px 0 #fff}
+.app:not([data-theme="map"]) .orb:hover,.app:not([data-theme="map"]) .orb.is-focused{box-shadow:0 18px 58px color-mix(in srgb,var(--core),transparent 82%),0 0 0 7px #ffffff60}
+.app:not([data-theme="map"]) .wires .hint{fill:#6d8178}
+.wires .process-flow{stroke:#a7d8c2;stroke-width:5.5;stroke-dasharray:none}
+.wires .feedback-flow{stroke:#8cbba4;stroke-width:3;stroke-dasharray:9 8}
+.wires .editorial-flow,.wires .campaign-flow,.wires .site-flow,.wires .kb-inflow,.wires .strategy-inflow,.wires .editorial-inflow{stroke-width:11.5;opacity:.9;stroke-dasharray:none;stroke-linecap:round;stroke-linejoin:round}
+.wires .editorial-flow{stroke:#b08acf}
+.wires .campaign-flow{stroke:#c6a061}
+.wires .site-flow{stroke:#9cb2d9}
+.wires .kb-inflow{stroke:#5aa58f}
+.wires .strategy-inflow{stroke:#c6a061}
+.wires .editorial-inflow{stroke:#b08acf}
+.wires .roles-flow{stroke:#a6c5b6;stroke-width:2.4;stroke-dasharray:5 8}
+.orb.kb-step{--pale:#e5f4eb;--edge:#b4d7c6}
+.orb.kb-step .orb-name{font-size:21px;line-height:1.14}
+.orb.kb-step .orb-desc{font-size:11px}
+.orb.kb-step .click-cue{display:none}
+.orb.route-band{height:87px;padding:11px 23px 11px 26px;border-radius:19px;gap:5px;text-align:left;align-items:flex-start;justify-content:center;background:linear-gradient(104deg,var(--pale),#fff 82%);border-width:2px;box-shadow:0 14px 44px color-mix(in srgb,var(--core),transparent 90%)}
+.orb.route-band:before{inset:-6px;border-radius:24px}
+.orb.route-band .orb-kicker{font-size:9px}
+.orb.route-band .orb-name{font-size:19px;line-height:1.05}
+.orb.route-band .orb-desc{font-size:10px;line-height:1.2;max-width:none}
+.orb.route-band .orb-tag,.orb.route-band .click-cue{display:none}
+.orb.route-band:after{content:'↗';position:absolute;right:17px;top:28px;font-size:22px;color:var(--core)}
+.orb.route-band.is-incoming:after{content:'↖'}
+.orb.project-symbol .orb-name{font-size:18px}
+@media(max-width:650px){.orb.route-band .orb-name{font-size:18px}.gov{top:126px}.crumb{top:188px}}
+
+
+/* V5: a clear space for the diagram, separate from navigation. */
+.stage{top:222px;bottom:190px}
+.map-note{top:198px}
+.orb.component{height:180px;min-height:180px;padding:20px 24px}
+.orb.component .orb-name{font-size:24px;line-height:1.14}
+.orb.component .orb-desc{font-size:15px;line-height:1.45;color:#4e675e}
+.orb.component .orb-kicker{font-size:12px;letter-spacing:.12em}
+.orb.component .orb-tag{font-size:11px}
+.wires .progress{stroke:var(--sceneCore);stroke-width:3.2;marker-end:url(#arrScene)}
+.wires .crossing{stroke-width:7;stroke:#b899d1;marker-end:url(#arrScene)}
+.wires .loop{stroke:var(--sceneCore);stroke-width:2.8;stroke-dasharray:7 9;marker-end:url(#arrScene)}
+.orb.kb-step .orb-desc{font-size:14px;line-height:1.35}.orb.kb-step .orb-kicker{font-size:11px}.orb.kb-step .orb-name{font-size:23px}.orb.hub .orb-desc{font-size:15px}.orb.route-band .orb-desc{font-size:12px}
+.wires .hint{text-anchor:middle;font-size:14px;fill:#4e675e}
+.gov .gmark{background:#edf1f5;color:#516c81}.gov{border-color:#ced9e3}
+.mobile-nav{display:none}
+.tagline{bottom:140px;font-size:9px}
+.info-panel{top:240px;bottom:160px;transform:none;max-height:none;animation:none}
+@media(max-width:900px) and (min-width:651px){.stage{top:222px;bottom:210px}.route-dock{bottom:110px}.status{bottom:17px}.info-panel{top:230px;bottom:180px}}
+@media(max-width:650px){
+ .top{padding:16px 18px 0}.branding{max-width:calc(100vw - 90px)}.branding .eyebrow{font-size:8px;line-height:1.5;letter-spacing:.12em}.branding h1{font-size:20px;margin-top:4px}
+ .gov{top:100px;min-height:46px}.gov .gmark{margin-left:0}.gov small{font-size:9px}
+ .crumb{top:154px;left:16px;right:16px;max-width:none;white-space:nowrap;overflow-x:auto}.crumb button{font-size:10px;flex-shrink:0}
+ .mobile-nav{position:absolute;display:flex;align-items:center;z-index:8;top:190px;left:18px;right:18px;gap:8px}.mobile-nav label{font-size:10px;width:68px;color:#597166}.mobile-nav select{width:calc(100% - 76px);border:1px solid #d5e1dc;border-radius:9px;background:#fff;color:var(--sceneCore);font:600 11px system-ui;padding:9px}
+ .stage{top:233px;bottom:175px}.status{display:none}.route-dock{bottom:65px;left:18px;right:18px;max-height:102px;overflow:auto;padding:9px 11px}.route-actions button{font-size:11px;padding:7px 9px}.route-dock strong{font-size:9px}
+ .controls{bottom:15px;right:18px;left:18px;justify-content:space-between}.controls button{height:38px}.controls .wide{font-size:12px}
+ .orb.component .orb-name{font-size:23px}.orb.component .orb-desc{font-size:14px}.orb.component .orb-kicker{font-size:10px}.orb.component .orb-tag{font-size:10px}.orb.component{padding:17px 24px}
+ .info-panel{top:238px;bottom:175px;max-height:none;left:18px;right:18px;padding:20px}.info-panel h2{font-size:22px}.info-panel p{font-size:13px}
+ .map-note{display:none}.wires{display:none}
+}
+@media(max-height:650px) and (min-width:651px){.gov{top:87px;min-height:42px}.branding p{display:none}.crumb{top:138px}.stage{top:170px;bottom:145px}.info-panel{top:175px;bottom:145px}.map-note{display:none}}
+
+
+/* V5.1 — Le architetture dei progetti sono composte da nuclei circolari,
+   coerenti con il linguaggio della KB; le fasce di uscita restano distinte. */
+.orb.component{
+  height:var(--diameter);min-height:0;border-radius:50%;
+  padding:22px 29px;gap:7px;
+  background:radial-gradient(circle at 34% 25%,#fff 1%,var(--pale) 76%,#eaf0ed 132%);
+  box-shadow:0 13px 44px color-mix(in srgb,var(--core),transparent 87%),inset 0 1px 0 #fff;
+}
+.orb.component:before{border-radius:50%;inset:-9px}
+.orb.component .orb-name{font-size:21px;line-height:1.17;letter-spacing:-.03em}
+.orb.component .orb-desc{font-size:12.6px;line-height:1.35;max-width:239px;color:#546d63}
+.orb.component .orb-kicker{font-size:10px;line-height:1.3}
+.orb.component .orb-tag{font-size:9px}
+@media(max-width:650px){
+  .orb.component{padding:22px 30px}
+  .orb.component .orb-name{font-size:21px}
+  .orb.component .orb-desc{font-size:13px;line-height:1.36}
+  .orb.component .orb-kicker{font-size:10px}
+}
+/* v5.4: progetto/approfondimento sempre identificabili nell'intestazione. */
+.app:not([data-theme="map"]) .branding h1{font-size:clamp(20px,2.2vw,31px)}
+@media(max-width:650px){.app:not([data-theme="map"]) .branding p{display:block;font-size:10px;line-height:1.2;margin-top:3px;max-width:240px}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header class="top">
+  <div class="branding">
+    <div class="eyebrow">ULSS 2 · Architettura dei progetti ChatGPT e dei repository</div>
+    <h1 id="sceneTitle">Una conoscenza, molte applicazioni.</h1>
+    <p id="sceneSubtitle">Come sono costruiti i progetti, quali cicli li governano e come collaborano.</p>
+  </div>
+  <div class="top-actions">
+    <button id="reset" type="button" class="chrome-button" aria-label="Torna alla mappa"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5M5.5 10.5V20H18.5v-9.5M9 20v-6h6v6"/></svg><span class="label-btn">Mappa</span></button>
+    <button id="helpBtn" type="button" class="chrome-button" aria-label="Istruzioni per navigare"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 1 1 4.3 1.7c-1.2.9-1.8 1.5-1.8 2.9M12 17h.01"/></svg><span class="label-btn">Guida</span></button>
+  </div>
+</header>
+<button id="governance" class="gov" type="button" aria-label="Esplora regole comuni e apprendimento">
+  <span class="gmark" aria-hidden="true">⌘</span><span class="gt"><strong>Governance condivisa</strong><small>Regole comuni · apprendimento · memoria delle esperienze</small></span><span class="garr" aria-hidden="true">↗</span>
+</button>
+<nav id="breadcrumb" class="crumb" aria-label="Percorso di esplorazione"></nav>
+<span id="sceneHint" class="map-note">Trascina per esplorare · clicca per entrare</span>
+<div class="mobile-nav"><label for="componentNav">Componenti della vista</label><select id="componentNav" aria-label="Centra un componente della vista"></select></div>
+<div id="stage" class="stage" tabindex="0" role="region" aria-label="Mappa interattiva trascinabile. Usa i pulsanti per aprire gli approfondimenti.">
+  <div id="world" class="world"></div>
+</div>
+<div id="routes" class="route-dock" hidden aria-label="Collegamenti tra progetti"><strong>Esplora i collegamenti</strong><div id="routeActions" class="route-actions"></div></div>
+<aside class="info-panel" id="panel" hidden aria-label="Approfondimento"><button type="button" class="panel-close" id="panelClose" aria-label="Chiudi approfondimento">×</button><div id="panelBody"></div></aside>
+<div class="status" aria-live="polite" aria-atomic="true"><div class="focus-info"><strong id="focusTitle">Conoscenza aziendale</strong><p id="focusText">Il punto di accesso, raffinazione e distribuzione della conoscenza.</p></div><div class="micro-instr">Trascina per muoverti<br>Rilascia per centrare<br>Clicca per approfondire</div></div>
+<div class="controls" aria-label="Comandi della mappa"><button type="button" id="back" class="wide" title="Indietro">↶ Indietro</button><button type="button" id="zoomOut" title="Allontana">−</button><button type="button" id="zoomIn" title="Avvicina">+</button><button type="button" id="recenter" title="Ricentra il nodo">◎</button></div>
+<span class="tagline">v5.5 · Architettura interattiva · 13 ottobre 2026</span>
+<div id="helpDialog" class="dialog-help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card"><button class="help-close" id="helpClose" type="button" aria-label="Chiudi guida">×</button><h2 id="helpTitle">Esplora la mappa</h2>
+  <p><strong>Trascina</strong> la superficie: tutti i nuclei si muovono insieme. Al rilascio, il nodo più vicino al centro viene messo in evidenza.</p>
+  <p><strong>Clicca o tocca</strong> un progetto per entrare con lo zoom. Il colore dell'ambiente rimane lo stesso a ogni livello. Nella KB trovi un processo interattivo: acquisizione, ciclo della conoscenza, schede canoniche, dubbio e uscite verso H-Farm o altri progetti.</p>
+  <p><strong>Naviga:</strong> usa le briciole di percorso o <kbd>Esc</kbd> per tornare, <kbd>←</kbd>/<kbd>→</kbd> per spostare la mappa, <kbd>+</kbd>/<kbd>−</kbd> per lo zoom. Usa la rotellina del mouse per lo zoom; sui touchpad puoi scorrere o usare il gesto a due dita. I nuclei si muovono come immersi nell’acqua: ciascuno segue una propria corrente, con un ritardo diverso e un riassestamento che dura circa due secondi. Le connessioni li seguono. Puoi regolare l’ampiezza del moto qui sotto.</p>
+  <label class="mode-toggle"><input id="elasticMotion" type="checkbox" checked> Movimento acquatico dei nuclei</label>
+  <div class="motion-slider"><label for="elasticIntensity">Ampiezza delle oscillazioni <output id="elasticValue" for="elasticIntensity">120%</output></label><input id="elasticIntensity" type="range" min="50" max="220" step="5" value="120"><span>Leggero <span>Molto ampio</span></span></div>
+  <label class="mode-toggle"><input id="reducedMotion" type="checkbox"> Riduci le animazioni</label>
+  <p style="font-size:11px;color:#7b9184;margin-top:13px">Prototipo illustrativo. La strategia di comunicazione è in elaborazione; le unità editoriali nel repository non sono automaticamente approvate per il pubblico.</p>
+  </div>
+</div>
+</div>
+<script type="application/json" id="sourceSnapshot">{"date":"2026-10-13","baseline":"mappa_interattiva_ulss2_v4_1.html","repositories":{"governance-condivisa":{"main":"bbdeef282e47f6445cf06fd96346bb89d6422dba"},"KB-ULSS2":{"main":"aff11323fe42f20efcb78f0d7ce09a61c30eac6c"},"percorso-nascita-editoriale-ULSS2":{"main":"a37ac844055f7d9c63e40f1805dc59f8ce8e9717"},"sito-ulss2-template-aree-tematiche":{"main":"b4aeb49c3ac86ef32a609d24cbbc787b2fdf9885"}}}
+</script>
+<script>
+(function(){'use strict';
+const $=id=>document.getElementById(id);
+const stage=$('stage'),world=$('world'),panel=$('panel'),panelBody=$('panelBody');
+const STAGE_W=1880,STAGE_H=1160;
+const colorLabels={kb:'Conoscenza aziendale',campaign:'Strategia di comunicazione',editorial:'Progetti editoriali',site:'Produzione web',gov:'Governance condivisa'};
+const circle=(id,x,y,size,title,opts={})=>({id,x,y,size,title,...opts});
+const wire=(d,kind='internal',label='',lx=0,ly=0)=>({d,kind,label,lx,ly});
+const scenes={};
+scenes.map={id:'map',title:'Mappa dei progetti',center:{x:975,y:523},scale:.80,nodes:[
+  circle('kb',555,550,346,'Conoscenza aziendale',{type:'hero',theme:'kb',kicker:'PROGETTO CHATGPT · KB ULSS 2',desc:'Acquisizione · cicli · schede · distribuzione',tag:'Repository canonico · GitHub',to:'kb'}),
+  circle('strategy',1050,292,224,'Strategia di comunicazione',{theme:'campaign',kicker:'PROGETTO · IN STUDIO',desc:'Esigenze + conoscenza → piano e brief',tag:'Elaborazione strategica e architetturale',to:'campaign'}),
+  circle('editorial',1274,658,286,'Progetti editoriali',{theme:'editorial',kicker:'PROGETTI CHATGPT · REPOSITORY',desc:'Corpus editoriali e contenuti riutilizzabili',tag:'Esempio: Percorso nascita',to:'editorial'}),
+  circle('web',1640,790,216,'Produzione web',{theme:'site',kicker:'PROGETTO · REPOSITORY',desc:'Builder, template, webapp',tag:'Sito ULSS 2',to:'site'})
+ ],links:[
+  wire('M718 600 C840 652 1005 670 1128 661','direct','percorso diretto',888,684),
+  wire('M698 448 C824 330 910 290 940 290','optional','percorso facoltativo',767,340),
+  wire('M1096 403 C1140 470 1194 500 1231 519','optional','piano + brief',1120,477),
+  wire('M1410 695 C1484 695 1510 761 1534 778','webline','contenuti web',1442,740)
+]};
+
+// KB: flusso operativo e relazioni, non un catalogo di temi o cartelle.
+scenes.kb={id:'kb',title:'Conoscenza aziendale · KB ULSS 2',theme:'kb',center:{x:968,y:575},scale:.77,nodes:[
+ circle('kb-input',265,555,230,'Acquisizione',{type:'kb-step',theme:'kb',kicker:'01 · ENTRA LA CONOSCENZA',desc:'Fonti, ricerca, persone e riscontri',to:'kb-inputs'}),
+ circle('kb-cycle',691,555,256,'Ciclo della conoscenza',{type:'kb-step',theme:'kb',kicker:'02 · ELABORAZIONE',desc:'Verifica, consolidamento e manutenzione',to:'knowledge'}),
+ circle('kb-canonical',1090,555,298,'Schede canoniche',{type:'hub',theme:'kb',kicker:'03 · PATRIMONIO DELLA KB',desc:'Conoscenza strutturata, versionata e riusabile',to:'kb-domains',tag:'Repository GitHub · KB ULSS 2'}),
+ circle('kb-views',1548,426,250,'Viste H-Farm',{type:'kb-step',theme:'kb',kicker:'04 · OUTPUT SPECIFICO',desc:'Alberatura guidata · views conversazionali',to:'kb-hfarm'}),
+ circle('kb-doubt',1090,865,222,'Ciclo del dubbio',{type:'kb-step',theme:'kb',kicker:'CONTROLLO E RISCONTRI',desc:'Rileva · verifica · eventualmente aggiorna',to:'doubt'}),
+ circle('kb-localgov',297,240,196,'Governance KB',{type:'kb-step project-symbol',theme:'kb',kicker:'REGOLE PROPRIE',desc:'Modello, ciclo, contratti',to:'kb-governance'}),
+ circle('kb-people',686,238,192,'Persone e agenti AI',{type:'kb-step project-symbol',theme:'kb',kicker:'RUOLI DISTINTI',desc:'Collaborano, verificano, decidono',to:'kb-roles'}),
+ circle('kb-workspace',1090,240,197,'ChatGPT + repository',{type:'kb-step project-symbol',theme:'kb',kicker:'AMBIENTE DI LAVORO',desc:'Progetto e sorgente canonica',detail:{text:'Il Progetto ChatGPT coordina il lavoro assistito, mentre il repository GitHub mantiene schede, versioni, relazioni, fonti e governance specifica. Le responsabilità di approvazione rimangono umane.'}}),
+ circle('kb-to-editor',1560,751,343,'Progetti editoriali',{type:'route-band',theme:'editorial',kicker:'USA LE SCHEDE CANONICHE',desc:'Apri la progettazione dei contenuti',to:'editorial'}),
+ circle('kb-to-campaign',1560,867,343,'Strategia di comunicazione',{type:'route-band',theme:'campaign',kicker:'RAMO FACOLTATIVO · IN STUDIO',desc:'Apri il progetto di strategia',to:'campaign'})
+],links:[
+ wire('M383 555 H554','process-flow'),
+ wire('M822 555 H937','process-flow'),
+ wire('M1240 504 Q1330 452 1415 426','process-flow'),
+ wire('M778 638 Q862 824 979 854','roles-flow'),
+ wire('M1090 709 V750','feedback-flow'),
+ wire('M1203 836 Q1310 730 1188 673','feedback-flow'),
+ wire('M1204 624 Q1305 711 1382 751','editorial-flow'),
+ wire('M1194 656 Q1282 819 1384 867','campaign-flow'),
+ wire('M297 338 Q402 418 582 495','roles-flow'),
+ wire('M686 336 V426','roles-flow'),
+ wire('M1090 338 V406','roles-flow')
+],note:'Ingresso → ciclo della conoscenza → schede. I dubbi possono nascere durante ricerca e utilizzo: vengono verificati prima di eventuali aggiornamenti.'};
+
+scenes.doubt={id:'doubt',title:'Ciclo del dubbio',center:{x:910,y:550},scale:.77,nodes:[
+ circle('d-observe',326,580,225,'Rilevare',{theme:'kb',kicker:'01 · SEGNALAZIONE',desc:'Un’informazione non torna, manca o è incerta.',detail:{text:'Un rilievo può arrivare dalla ricerca, dall’uso della KB, da una vista derivata o dal lavoro editoriale. La segnalazione non è ancora una correzione.'}}),
+ circle('d-review',722,580,225,'Verificare',{theme:'kb',kicker:'02 · RICOGNIZIONE',desc:'Confrontare le schede e le fonti.',detail:{text:'Si esamina ciò che è già documentato e si qualifica il dubbio. Spesso basta chiarire la conoscenza già disponibile senza aprire una nuova questione.'}}),
+ circle('d-ask',1122,580,225,'Approfondire',{theme:'kb',kicker:'03 · SE NECESSARIO',desc:'Ottenere riscontri competenti.',detail:{text:'Quando occorre, si attivano le verifiche e i riscontri delle responsabilità competenti, rispettando stati e limiti della conoscenza.'}}),
+ circle('d-act',1525,580,225,'Valutare',{theme:'kb',kicker:'04 · EVENTUALE ESITO',desc:'Aggiornare solo se fondato e autorizzato.',detail:{text:'Un riscontro fondato può portare ad aggiornare le schede canoniche e riesaminare le viste interessate. Non tutti i dubbi generano modifiche.'}})
+],links:[wire('M439 580 H609','internal'),wire('M835 580 H1009','internal'),wire('M1235 580 H1412','internal')]};
+
+// Scenari dimostrativi approfonditi: stessi colori del progetto da cui si entra.
+const processScene=(id,title,theme,steps,options={})=>{
+ const xs=steps.length===5?[225,565,905,1245,1585]:[320,725,1130,1535],y=555;
+ const nodes=steps.map((s,i)=>circle(s.id,xs[i],y,steps.length===5?210:240,s.title,{
+   type:'child',theme,kicker:`${String(i+1).padStart(2,'0')} · ${s.kicker||'PASSAGGIO'}`,desc:s.desc,tag:s.tag,detail:{text:s.text,technical:s.technical},actions:s.actions
+ }));
+ const links=[];
+ for(let i=0;i<nodes.length-1;i++){
+   links.push(wire(`M${xs[i]+(nodes[i].size/2)+9} ${y} H${xs[i+1]-(nodes[i+1].size/2)-12}`,'progress'));
+ }
+ return {id,title,theme,center:{x:910,y:545},scale:.80,nodes,links,...options};
+};
+scenes.knowledge=processScene('knowledge','Ciclo della conoscenza','kb',[
+ {id:'kn-source',title:'Raccogliere',kicker:'FONTI',desc:'Fonti, evidenze e referenti',text:'Si ricercano fonti e riscontri, distinguendo ciò che è documentato dalle ipotesi. Il materiale preparatorio non è ancora conoscenza canonica.'},
+ {id:'kn-analyse',title:'Verificare',kicker:'ANALISI',desc:'Controllare condizioni e limiti',text:'Persone e agenti AI possono analizzare; verifica e decisioni spettano alle responsabilità competenti.'},
+ {id:'kn-structure',title:'Consolidare',kicker:'KB',desc:'Schede canoniche e relazioni',text:'Le conoscenze sostenute vengono organizzate in schede, con provenienza, stati, condizioni, responsabilità e versioni.'},
+ {id:'kn-use',title:'Riutilizzare',kicker:'DESTINAZIONI',desc:'Viste H-Farm e progetti editoriali',text:'Si usa la stessa sorgente canonica in contesti differenti, con trasformazioni appropriate quando necessarie.',actions:[{label:'Viste H-Farm',to:'kb-hfarm'},{label:'Progettazione editoriale',to:'editorial'}]},
+ {id:'kn-maintain',title:'Mantenere',kicker:'REVISIONE',desc:'Questioni, riscontri, aggiornamenti',text:'Nuove evidenze e dubbi vengono valutati nel ciclo competente; una modifica della KB è possibile, non automatica.',actions:[{label:'Esplora il ciclo del dubbio',to:'doubt'}]}
+ ]);
+// Approfondimenti della KB: pochi elementi funzionali, non indice tecnico del repository.
+scenes['kb-inputs']={id:'kb-inputs',title:'Acquisizione della conoscenza',theme:'kb',center:{x:900,y:563},nodes:[
+ circle('input-docs',350,376,267,'Fonti documentali',{theme:'kb',kicker:'INGRESSO',desc:'Fonti ufficiali e documentazione',detail:{text:'Il materiale documentale costituisce evidenza da interpretare e verificare: non diventa automaticamente conoscenza canonica.'}}),
+ circle('input-ai',920,345,265,'Ricerca assistita',{theme:'kb',kicker:'AGENTI AI',desc:'Ricognizioni, confronti, ricerca approfondita',detail:{text:'Gli agenti AI possono supportare ricerca approfondita, confronto delle fonti e preparazione di dossier, senza autorizzare da soli il consolidamento.'}}),
+ circle('input-human',1482,376,270,'Raccolta umana',{theme:'kb',kicker:'PERSONE',desc:'Referenti, prassi e riscontri',detail:{text:'Le persone raccolgono prassi, integrano osservazioni e ottengono riscontri competenti; stato e provenienza restano espliciti.'}}),
+ circle('input-handoff',920,795,300,'Ciclo della conoscenza',{type:'hub',theme:'kb',kicker:'PASSAGGIO SUCCESSIVO',desc:'La raccolta avvia verifica e consolidamento',to:'knowledge'})
+],links:[wire('M470 500 Q615 679 779 749','process-flow'),wire('M920 483 V640','process-flow'),wire('M1356 500 Q1220 687 1065 747','process-flow')]};
+scenes['kb-roles']={id:'kb-roles',title:'Persone e agenti AI · Ruoli',theme:'kb',center:{x:910,y:550},nodes:[
+ circle('role-human',403,543,292,'Persone',{theme:'kb',kicker:'RESPONSABILITÀ',desc:'Verificano, validano e autorizzano',detail:{text:'I referenti e le responsabilità competenti valutano riscontri, limiti, approvazioni e integrazioni nella sorgente canonica.'}}),
+ circle('role-ai',1426,543,292,'Agenti AI',{theme:'kb',kicker:'SUPPORTO',desc:'Ricercano, analizzano e preparano',detail:{text:'Il lavoro degli agenti facilita ricerca, confronto, strutturazione e verifiche preparatorie; non sostituisce il giudizio e le autorizzazioni umane.'}}),
+ circle('role-center',915,544,270,'Ciclo della conoscenza',{type:'hub',theme:'kb',kicker:'LAVORO COORDINATO',desc:'Ruoli complementari; decisioni competenti',to:'knowledge'})
+],links:[wire('M553 543 H764','roles-flow'),wire('M1275 543 H1065','roles-flow')]};
+scenes['kb-governance']={id:'kb-governance',title:'Governance specifica della KB',theme:'kb',center:{x:918,y:555},nodes:[
+ circle('gov-local',910,537,289,'Governance della KB',{type:'hub',theme:'kb',kicker:'REGOLE DEL PROGETTO',desc:'Nucleo, moduli e contratti specifici',detail:{text:'Il progetto utilizza istruzioni correnti, moduli sul modello e sul ciclo della conoscenza, più contratti per gli aspetti specialistici. L’accesso tramite il Progetto ChatGPT rimanda al repository autorevole.'}}),
+ circle('gov-model',384,367,249,'Modello della conoscenza',{theme:'kb',kicker:'MODULO M',desc:'Schede, relazioni e responsabilità',detail:{text:'Definisce la struttura della conoscenza: unità, responsabilità, collegamenti e criteri del modello.'}}),
+ circle('gov-cycle',1446,367,249,'Gestione della conoscenza',{theme:'kb',kicker:'MODULO C',desc:'Fonti, verifiche, incertezza, viste',detail:{text:'Disciplina il lavoro sulle evidenze, il consolidamento, il dubbio e gli adattamenti verso le destinazioni.'}}),
+ circle('gov-rules',382,814,240,'Contratti mirati',{theme:'kb',kicker:'SPECIFICITÀ',desc:'Registri e destinazioni',detail:{text:'Regole operative circoscritte completano il quadro senza sostituire la governance del progetto.'}}),
+ circle('gov-shared',1444,812,278,'Governance condivisa',{theme:'kb',kicker:'ADOZIONE NON ANCORA EFFETTIVA',desc:'Collegamento potenziale',detail:{text:'La governance condivisa esiste, ma la KB non risulta attualmente fra i progetti formalmente aderenti.'},actions:[{label:'Esplora il progetto Governance condivisa',to:'gov'}]})
+],links:[wire('M778 465 Q604 376 509 378','internal'),wire('M1045 457 Q1249 363 1320 380','internal'),wire('M774 623 Q605 771 506 790','internal'),wire('M1053 624 Q1235 759 1306 799','internal')]};
+scenes['kb-hfarm']={id:'kb-hfarm',title:'Viste H-Farm · Output della KB',theme:'kb',center:{x:912,y:561},nodes:[
+ circle('h-knowledge',321,568,276,'Schede canoniche',{type:'hub',theme:'kb',kicker:'SORGENTE',desc:'Conoscenza aziendale governata',detail:{text:'Le schede canoniche forniscono il fondamento conoscitivo. La destinazione H-Farm richiede rappresentazioni differenti secondo l’uso previsto.'}}),
+ circle('h-guided',1243,375,301,'Albero per interazione guidata',{theme:'kb',kicker:'H-FARM · LIVELLO 1',desc:'Domande, opzioni e percorsi controllati',detail:{text:'L’alberatura organizza il primo accesso: in alcuni casi risolve il bisogno, in altri indirizza verso l’agente conversazionale. Non è la stessa cosa delle views per l’agente.'}}),
+ circle('h-agent',1243,786,300,'Viste per agente conversazionale',{theme:'kb',kicker:'H-FARM · LIVELLO 2',desc:'Corpus adattato per dialogo e risposte',detail:{text:'Le views derivate dalla KB supportano il dialogo dell’agente conversazionale. Il passaggio dall’alberatura all’agente non è un handoff umano.'}})
+],links:[wire('M462 514 Q779 352 1093 364','process-flow'),wire('M463 629 Q777 811 1093 803','process-flow')],note:'Due forme di utilizzo coordinate e distinte. L’eventuale operatore umano è un livello successivo del servizio H-Farm.'};
+
+// V5 project-specific architectures. The camera and aquatic engine remain v4.1.
+const card=(id,x,y,title,desc,theme,opts={})=>circle(id,x,y,300,title,{type:'component',theme,kicker:opts.kicker||'COMPONENTE',desc,detail:{text:opts.text||desc},...opts});
+// V5.2 — Solo le nuove viste dei progetti: composizione organica con nuclei
+// distribuiti su posizioni stabili ma non allineate a griglia.
+// Non tocca la disposizione della KB, i processi precedenti o la mappa generale.
+function smoothSpline(points){
+  if(!points.length)return '';
+  const num=v=>Number(v).toFixed(1);
+  let result=`M${num(points[0].x)} ${num(points[0].y)}`;
+  for(let i=0;i<points.length-1;i++){
+    const prev=points[Math.max(0,i-1)],a=points[i],b=points[i+1],next=points[Math.min(points.length-1,i+2)];
+    result+=` C${num(a.x+(b.x-prev.x)/6)} ${num(a.y+(b.y-prev.y)/6)}`+
+            ` ${num(b.x-(next.x-a.x)/6)} ${num(b.y-(next.y-a.y)/6)}`+
+            ` ${num(b.x)} ${num(b.y)}`;
+  }
+  return result;
+}
+// V5.3: spacing is expressed between the actual outer edges of the circles,
+// not between their centers. Keep a generous safety corridor for arrows.
+const ARCH_MIN_GAP=148;
+const ANIMATED_MIN_GAP=55;
+function scatterNodes(id,nodes){
+  const padded=nodes.map((n,i)=>{
+    const sx=hashFloat(id+':'+n.id,'scatter-x')*2-1;
+    const sy=hashFloat(id+':'+n.id,'scatter-y')*2-1;
+    const dx=(sx<0?-1:1)*(54+Math.abs(sx)*70);
+    const dy=sy*62;
+    return {...n,x:n.x+dx,y:n.y+dy};
+  });
+  // Deterministic relaxation: start from the irregular composition and
+  // separate nodes until their circumference-to-circumference gap is safe.
+  for(let pass=0;pass<440;pass++){
+    let worst=0;
+    for(let i=0;i<padded.length;i++)for(let j=i+1;j<padded.length;j++){
+      const a=padded[i],b=padded[j];let vx=b.x-a.x,vy=b.y-a.y;
+      let d=Math.hypot(vx,vy);
+      const lack=(a.size+b.size)/2+ARCH_MIN_GAP-d;
+      if(lack<=.03)continue;
+      worst=Math.max(worst,lack);
+      if(d<.01){vx=1;vy=0;d=1;}
+      const force=lack*.54;
+      a.x-=vx/d*force;a.y-=vy/d*force;
+      b.x+=vx/d*force;b.y+=vy/d*force;
+    }
+    for(const n of padded){
+      const margin=35;
+      n.x=Math.max(n.size/2+margin,Math.min(STAGE_W-n.size/2-margin,n.x));
+      n.y=Math.max(n.size/2+margin,Math.min(STAGE_H-n.size/2-margin,n.y));
+    }
+    if(worst<.1)break;
+  }
+  return padded;
+}
+// The connector is computed FROM the circle edges, not by shifting and
+// splining a pre-existing line. It can therefore never curl behind its arrow.
+function edgeCurve(a,b,bend=0){
+  const dx=b.x-a.x,dy=b.y-a.y,dist=Math.hypot(dx,dy);
+  const ux=dx/dist,uy=dy/dist,nx=-uy,ny=ux;
+  const edgeDistance=n=>n.type==='route-band' ? Math.min((n.size/2)/Math.max(.001,Math.abs(ux)),43.5/Math.max(.001,Math.abs(uy))) : n.size/2;
+  const startRadius=edgeDistance(a),endRadius=edgeDistance(b),radii=startRadius+endRadius;
+  if(dist<radii+12)return '';
+  const start={x:a.x+ux*(startRadius+9),y:a.y+uy*(startRadius+9)};
+  const end={x:b.x-ux*(endRadius+15),y:b.y-uy*(endRadius+15)};
+  const gap=Math.max(3,dist-radii-24);
+  const control=Math.min(Math.max(30,gap*.33),gap*.42);
+  const f=x=>x.toFixed(2);
+  return `M${f(start.x)} ${f(start.y)} C${f(start.x+ux*control+nx*bend)} ${f(start.y+uy*control+ny*bend)} ${f(end.x-ux*control+nx*bend)} ${f(end.y-uy*control+ny*bend)} ${f(end.x)} ${f(end.y)}`;
+}
+function linkBend(a,b,others,preferred,kind){
+  const norm=Math.hypot(b.x-a.x,b.y-a.y),nx=-(b.y-a.y)/norm,ny=(b.x-a.x)/norm;
+  // Smooth, monotone connector candidates; favor short curves but avoid other circles.
+  const bends=[preferred,0,40,-40,85,-85,135,-135,195,-195,270,-270,360,-360,450,-450];
+  const svgPath=document.createElementNS('http://www.w3.org/2000/svg','path');
+  let best=0,bestScore=Infinity;
+  for(const bend of bends){
+    const d=edgeCurve(a,b,bend);if(!d)continue;
+    svgPath.setAttribute('d',d);const len=svgPath.getTotalLength();
+    let penalty=0;
+    for(let k=1;k<=25;k++){
+      const p=svgPath.getPointAtLength(len*k/26);
+      for(const n of others){if(n.id===a.id||n.id===b.id)continue;
+        const clearance=Math.hypot(p.x-n.x,p.y-n.y)-(n.size/2+25);
+        if(clearance<0)penalty+=(-clearance)**2;
+      }
+    }
+    const score=penalty*2+Math.abs(bend)*5+(Math.sign(bend)!==Math.sign(preferred)&&preferred?20:0);
+    if(score<bestScore){bestScore=score;best=bend;}
+  }
+  return best;
+}
+function remapArchLinks(id,original,scattered,links){
+  const findNearest=(p,skip=null)=>{
+    let chosen=null,d=Infinity;
+    for(const n of original){if(n.id===skip)continue;
+      const distance=Math.hypot(n.x-p.x,n.y-p.y);
+      if(distance<d){d=distance;chosen=n.id;}
+    }return chosen;
+  };
+  const current=new Map(scattered.map(n=>[n.id,n]));
+  const old=new Map(original.map(n=>[n.id,n]));
+  const probe=document.createElementNS('http://www.w3.org/2000/svg','path');
+  return links.map((l,index)=>{
+    probe.setAttribute('d',l.d);const total=probe.getTotalLength();
+    if(!total)return l;
+    const p0=probe.getPointAtLength(0),pe=probe.getPointAtLength(total);
+    const from=findNearest(p0),to=findNearest(pe,from)||findNearest(pe);
+    if(!from||!to)return l;
+    const a=current.get(from),b=current.get(to),pMid=probe.getPointAtLength(total/2);
+    const oa=old.get(from),ob=old.get(to);
+    const dx=ob.x-oa.x,dy=ob.y-oa.y,d=Math.max(1,Math.hypot(dx,dy));
+    const prefer=((pMid.x-(oa.x+ob.x)/2)*-dy+(pMid.y-(oa.y+ob.y)/2)*dx)/d;
+    const modest=Math.max(-115,Math.min(115,prefer*.65));
+    const bend=linkBend(a,b,scattered,modest,l.kind);
+    const svg=edgeCurve(a,b,bend);
+    return {...l,d:svg,fromId:from,toId:to,bend,
+      lx:(a.x+b.x)/2-(b.y-a.y)/Math.max(1,Math.hypot(b.x-a.x,b.y-a.y))*bend*.75,
+      ly:(a.y+b.y)/2+(b.x-a.x)/Math.max(1,Math.hypot(b.x-a.x,b.y-a.y))*bend*.75-20};
+  });
+}
+
+const arch=(id,title,theme,nodes,links,note='')=>{
+  const mid=590,factor=1.2,ymap=y=>mid+(y-mid)*factor;
+  const original=nodes.map(n=>({...n,y:ymap(n.y)}));
+  const stretched=links.map(l=>({...l,
+    d:l.d.replace(/(-?\d+(?:\.\d+)?)(\s+)(-?\d+(?:\.\d+)?)/g,(_,x,sep,y)=>`${x}${sep}${ymap(Number(y)).toFixed(2)}`),
+    ly:l.ly?ymap(l.ly):l.ly
+  }));
+  const moved=scatterNodes(id,original);
+  const soft=remapArchLinks(id,original,moved,stretched);
+  return {id,title,theme,nodes:moved,links:soft,note,center:{x:920,y:550},scattered:true};
+};
+
+const flow=(x1,y1,x2,y2,label='',kind='progress')=>wire(`M${x1} ${y1} L${x2} ${y2}`,kind,label,(x1+x2)/2,(y1+y2)/2-18);
+scenes.gov=arch('gov','Governance condivisa · livelli e funzionamento','governance',[
+ card('g-central',305,290,'Repository centrale','Sede dei moduli comuni e delle versioni','governance',{kicker:'SEDE DELLE REGOLE',text:'Il repository condiviso conserva e distribuisce le regole comuni approvate. Le modifiche proposte non sono operative finché non vengono autorizzate.'}),
+ card('g-trans',810,290,'Livello trasversale','Regole comuni + apprendimento','governance',{kicker:'LIVELLO 1 · BASE COMUNE',text:'Fissa i principi e il metodo condivisi dai progetti aderenti. L’adesione comprende apprendimento e uso selettivo dell’esperienza.'}),
+ card('g-scope',1370,290,'Livello di ambito','Regole editoriali, quando applicabili','governance',{kicker:'LIVELLO 2 · SPECIALIZZAZIONE',text:'Integra le regole trasversali quando il progetto svolge funzioni di uno specifico ambito. Per Percorso nascita è adottato il modulo editoriale.'}),
+ card('g-local',1370,690,'Specializzazione locale','Responsabilità e regole del singolo progetto','governance',{kicker:'LIVELLO 3 · PROGETTO ADERENTE',text:'Il progetto dichiara quali moduli adotta e conserva le disposizioni specifiche nella propria sede. Le regole locali non sostituiscono i moduli centrali.',to:'editorial-governance'}),
+ card('g-learn',310,670,'Ciclo dell’apprendimento','Miglioramento delle disposizioni','governance',{kicker:'CICLO TRASVERSALE',to:'learning'}),
+ card('g-experience',810,690,'Ciclo dell’esperienza','Memoria selettiva e riuso','governance',{kicker:'CICLO TRASVERSALE',to:'experience'}),
+ card('g-trace',320,1000,'Tracciabilità delle regole','Identificativi, provenienza, cambiamenti','governance',{kicker:'SUPPORTO AI LIVELLI',to:'gov-trace'}),
+ card('g-adopt',890,1010,'Adozione e attivazione','Percorso nascita aderente; KB e Sito potenziali','governance',{kicker:'COLLEGAMENTO AI PROGETTI',text:'Solo Percorso nascita risulta formalmente aderente. Adesione alle regole, aggiornamento delle istruzioni ChatGPT e verifica degli accessi sono passaggi distinti.'})
+],[flow(470,290,640,290,'','progress'),flow(980,290,1200,290,'','progress'),flow(1370,395,1370,565,'','progress'),wire('M810 405 Q600 480 400 550','internal'),wire('M820 405 Q815 465 810 535','internal'),wire('M1310 820 Q1170 900 1010 960','internal'),flow(480,1000,720,1010,'','internal')],
+'Gerarchia normativa: trasversale → ambito (quando pertinente) → specializzazione locale. Apprendimento, esperienza e tracciabilità sostengono il sistema, senza essere ulteriori livelli di regole.');
+scenes.learning=arch('learning','Ciclo dell’apprendimento · migliorare le disposizioni','governance',[
+ card('le-observe',330,320,'Esperienza e osservazione','Problema riconoscibile o retrospettiva','governance',{kicker:'01 · INGRESSO',text:'Durante l’uso o alla conclusione di una fase significativa emergono problemi e risultati. Una retrospettiva può alimentare più percorsi, oppure non produrre alcun seguito.'}),
+ card('le-suggest',850,320,'Modifica mirata','Direttamente nella sede competente','governance',{kicker:'02 · PROPOSTA',text:'Una lacuna normativa motivata produce una proposta nella sede locale, trasversale o di ambito pertinente. Non occorre prima registrare l’esperienza nella memoria comune.'}),
+ card('le-evaluate',1370,320,'Impatto e approvazione','Valutazione proporzionata e decisione esplicita','governance',{kicker:'03 · DECISIONE',text:'Si valutano beneficio, impatto sui consumatori e rischi. La responsabilità competente approva esplicitamente; un caso locale non diventa automaticamente regola comune.'}),
+ card('le-integrate',1370,680,'Integrazione e vigenza','La disposizione diventa operativa nel proprio ambito','governance',{kicker:'04 · RISULTATO',text:'La modifica autorizzata entra nella sede primaria secondo le condizioni di vigenza. ID e riferimenti consentono di riconoscerne origine e continuità.',actions:[{label:'Tracciabilità delle regole',to:'gov-trace'}]}),
+ card('le-review',850,680,'Uso e riesame','Confermare, correggere, restringere o ritirare','governance',{kicker:'05 · RITORNO',text:'L’osservazione degli esiti può riaprire una disposizione specifica. Il riesame controlla anche ambito, applicazione e condizioni mutate; non presume che la norma sia sbagliata.'}),
+ card('le-boundary',330,680,'Questione conoscitiva?','Rinvio alla responsabilità KB competente','governance',{kicker:'CONFINE TRA CICLI',text:'Quando il problema riguarda i fatti, la destinazione è il ciclo della conoscenza competente. La governance condivisa non consolida la conoscenza dei progetti.',actions:[{label:'Attraversa il confine → KB',to:'knowledge'}]})
+],[flow(500,320,680,320),flow(1020,320,1200,320),flow(1370,415,1370,585),flow(1200,680,1020,680),wire('M850 775 Q850 870 590 870 Q70 870 170 370','loop','eventuale correzione',630,865),flow(680,680,500,680,'se riguarda fatti','loop')]);
+scenes.experience=arch('experience','Ciclo dell’esperienza · conservare e riutilizzare','governance',[
+ card('ex-situation',330,320,'Situazione affrontata','Tentativo ed esito effettivamente osservato','governance',{kicker:'01 · INGRESSO',text:'La memoria descrive ciò che è avvenuto, distinguendolo dalle attese. Il sistema è operativo; non si inventano casi o risultati per popolarlo.'}),
+ card('ex-select',850,320,'Selezione utile e consentita','Solo ciò che aiuta in situazioni analoghe','governance',{kicker:'02 · SELEZIONE',text:'Si conserva un’esperienza quando esiste un valore concreto di riuso e un contesto condivisibile. Non si registra ogni attività e non si trasferiscono contenuti protetti.'}),
+ card('ex-keep',1370,320,'Memoria comune','Problema, contesto, soluzione, esito e limiti','governance',{kicker:'03 · CONSERVAZIONE',text:'Le nuove esperienze selezionate per il riuso comune risiedono nella memoria centrale, con rinvii utili dalle sedi locali. Non costituiscono norme né schede canoniche.'}),
+ card('ex-find',1370,680,'Recupero pertinente','Cercare per problema e contesto','governance',{kicker:'04 · QUANDO SERVE',text:'La memoria si consulta quando emerge un problema potenzialmente già affrontato; non è richiesta a ogni attività.'}),
+ card('ex-reuse',850,680,'Riuso contestualizzato','Verificare condizioni e governance corrente','governance',{kicker:'05 · APPLICAZIONE',text:'La soluzione precedente va adattata al contesto e deve essere compatibile con le regole vigenti. Un’esperienza può sostenere una proposta normativa distinta.',actions:[{label:'Collegamento → apprendimento',to:'learning'}]}),
+ card('ex-update',330,680,'Riscontro e aggiornamento','Confermare, precisare o dichiarare superata','governance',{kicker:'06 · RISULTATO',text:'Il nuovo esito può aggiornare la memoria quando utile e autorizzato, senza modifiche automatiche a regole o conoscenza.'})
+],[flow(500,320,680,320),flow(1020,320,1200,320),flow(1370,415,1370,585),flow(1200,680,1020,680),flow(680,680,500,680),wire('M330 775 Q330 890 1600 890 Q1680 890 1540 355','loop','memoria aggiornata',930,880)]);
+scenes['gov-trace']=arch('gov-trace','Tracciabilità · riconoscere e riesaminare una regola','governance',[
+ card('tr-rule',340,350,'Disposizione + ID','Identificativo GCR persistente','governance',{kicker:'NEL MODULO COMPETENTE',text:'Ogni disposizione normativa autonoma centrale ha un ID stabile, privo di significato di posizione o stato. Un ID mantiene la continuità; gli ID ritirati non si riutilizzano.'}),
+ card('tr-register',900,350,'Registro centrale','Collocazione, stato, provenienza e modifiche','governance',{kicker:'RINVIO ALLA NORMA',text:'Il registro collega l’ID alla sede corrente, all’origine e alle decisioni significative. Non duplica il testo normativo né è un diario di ogni modifica.'}),
+ card('tr-review',1460,350,'Riesame mirato','Comportamento inatteso → regola coinvolta','governance',{kicker:'UTILIZZO',text:'Si recuperano origine e modifiche pertinenti per valutare la causa del problema. Il riesame può confermare o proporre una correzione.'}),
+ card('tr-local',620,700,'Regole locali','Rinvii locali alla decisione o all’origine','governance',{kicker:'RESPONSABILITÀ DEL PROGETTO',text:'La codifica centrale non viene imposta alle regole locali. La loro provenienza rimane raggiungibile nella sede competente.'}),
+ card('tr-change',1220,700,'Continuità delle modifiche','Norma, ID e registro mantenuti insieme','governance',{kicker:'MANUTENZIONE',text:'Spostamenti mantengono l’ID; scissioni, fusioni e ritiri rendono riconoscibili precedenti e successori. Identificare una norma non concede nuove autorità.'})
+],[flow(510,350,730,350),flow(1070,350,1290,350),flow(1460,445,1300,605),flow(1050,700,790,700),wire('M1220 795 Q400 880 340 450','loop')]);
+scenes.editorial=arch('editorial','Progetti editoriali · dalla KB ai prodotti','editorial',[
+ circle('e-from-kb',295,240,326,'Conoscenza aziendale',{type:'route-band',direction:'in',theme:'kb',kicker:'IN INGRESSO · SCHEDE CANONICHE',desc:'Risalire alla sorgente fattuale',to:'kb'}),
+ circle('e-from-campaign',290,735,326,'Strategia di comunicazione',{type:'route-band',direction:'in',theme:'campaign',kicker:'IN INGRESSO · PIANO E BRIEF',desc:'Risalire al percorso facoltativo',to:'campaign'}),
+ card('e-design',800,350,'Progettazione editoriale','Schede KB, mandato diretto o brief; architettura e testi','editorial',{kicker:'PROGETTO CHATGPT · ELABORAZIONE',to:'editorial-process'}),
+ card('e-corpus',1300,350,'Corpus riutilizzabile','Unità editoriali e provenienza dalla KB','editorial',{kicker:'03 · REPOSITORY EDITORIALE',text:'Il repository conserva una sorgente comunicativa modulare. I testi destinati alle persone e le note interne restano distinti; il corpus non diventa una seconda KB.'}),
+ card('e-review',1300,690,'Revisione e validazione','Verifiche competenti e uso autorizzato','editorial',{kicker:'04 · CONTROLLO',text:'Si controllano chiarezza, fedeltà e raccordi; le verifiche competenti e l’autorizzazione allo specifico uso restano distinte.'}),
+ card('e-views',800,690,'Viste e prodotti','Opuscoli, brochure, volantini, presentazioni…','editorial',{kicker:'05 · OUTPUT EDITORIALI',to:'outputs'}),
+ card('e-governance',510,1000,'Governance adottata','Trasversale + editoriale + specializzazione locale','editorial',{kicker:'METODO E RESPONSABILITÀ',to:'editorial-governance'}),
+ circle('e-to-site',1435,1040,320,'Produzione web',{type:'route-band',theme:'site',kicker:'CONTENUTI PER IL SITO',desc:'Vai al progetto che realizza le pagine',to:'site'})
+],[flow(460,240,630,350,'','kb-inflow'),flow(460,735,640,435,'','strategy-inflow'),flow(970,350,1130,350),flow(1300,445,1300,595),flow(1130,690,970,690),flow(510,875,650,790,'governa','internal'),wire('M915 760 Q1150 920 1275 1040','site-flow')],
+'Due ingressi alternativi e riconoscibili: schede canoniche dalla KB oppure piano e brief dalla Strategia. Entrambi alimentano la progettazione editoriale e il corpus riutilizzabile.');
+scenes['editorial-process']=arch('editorial-process','Progettazione · composizione e revisione','editorial',[
+ card('ed-needs',320,330,'Bisogni e copertura','Domande delle persone e conoscenza sostenuta','editorial',{kicker:'01 · ANALISI',text:'Si ricostruiscono le situazioni informative e si recuperano le schede pertinenti con stati, condizioni e limiti. La struttura del corpus non ricalca automaticamente l’indice KB.'}),
+ card('ed-compose',840,330,'Architettura e testi','Unità modulari, gerarchie e raccordi','editorial',{kicker:'02 · REDAZIONE',text:'Il progetto decide funzione, priorità, linguaggio e relazioni. Mantiene le condizioni essenziali vicino alle affermazioni e non introduce nuove procedure o fatti.'}),
+ card('ed-review',1360,330,'Revisione controllata','Fedeltà, chiarezza e autonomia di lettura','editorial',{kicker:'03 · QUALITÀ',text:'Si verifica il significato dei testi e dei collegamenti, anche per chi entra direttamente in una pagina. Una revisione dell’assistente non equivale a validazione umana competente.'}),
+ card('ed-corpus',1360,700,'Sorgente canonica editoriale','Testi riutilizzabili + note interne separate','editorial',{kicker:'04 · CONSERVAZIONE',text:'Le unità mantengono riferimenti alla KB e condizioni di utilizzo. L’integrazione nel repository non approva automaticamente un prodotto pubblico.'}),
+ card('ed-view',840,700,'Composizione delle viste','Selezione per destinazione e autorizzazioni','editorial',{kicker:'05 · DELIVERY',text:'La vista ricombina il corpus per uno specifico uso. Prima della generazione pubblica si selezionano soltanto contenuti positivamente autorizzati.',actions:[{label:'Viste e prodotti',to:'outputs'}]}),
+ card('ed-feedback',320,700,'Manutenzione delle dipendenze','KB cambia → riesame di unità e viste','editorial',{kicker:'RITORNO ALLA SORGENTE',text:'Le variazioni fattuali si gestiscono nella KB; il progetto editoriale rivaluta solo i contenuti dipendenti e comunica le differenze ai destinatari.'})
+],[flow(490,330,670,330),flow(1010,330,1190,330),flow(1360,425,1360,605),flow(1190,700,1010,700),flow(670,700,490,700),wire('M320 795 Q80 795 80 330 H145','loop')]);
+scenes['editorial-governance']=arch('editorial-governance','Percorso nascita · progetto, repository e governance','editorial',[
+ card('eg-chat',340,330,'Progetto ChatGPT','Redazione e architettura editoriale','editorial',{kicker:'AMBIENTE DI LAVORO',text:'L’assistente lavora come redattore e consulente editoriale. Le responsabilità conoscitive, tecniche e di approvazione restano nei progetti e nei ruoli competenti.'}),
+ card('eg-repo',900,330,'Repository dedicato','Corpus, viste, versioni e condizioni d’uso','editorial',{kicker:'PERCORSO NASCITA ULSS 2',text:'Il repository conserva la sorgente editoriale e le derivazioni. La governance locale documenta l’adesione e le regole applicabili.'}),
+ card('eg-common',1460,330,'Trasversale + apprendimento','Pacchetto comune formalmente adottato','editorial',{kicker:'ADESIONE EFFETTIVA',actions:[{label:'Apri la governance condivisa',to:'gov'}],text:'L’adesione è verificata nel router locale e nel registro centrale. Attivazione delle istruzioni e verifica degli accessi restano distinte.'}),
+ card('eg-scope',1460,700,'Governance editoriale','Ambito centrale, comprese le regole sul corpus','editorial',{kicker:'MODULO ADOTTATO',text:'Il modulo disciplina trasformazione fedele, destinatari, diffusibilità, revisione, delivery e manutenzione della sorgente editoriale.'}),
+ card('eg-local',900,700,'Specializzazione locale','Fonti KB, perimetro e responsabilità del tema','editorial',{kicker:'SEDE LOCALE',text:'Le disposizioni locali definiscono il contratto conoscitivo con la KB e il rapporto con il progetto Sito. Non modificano le norme centrali o le schede KB.'}),
+ card('eg-boundary',340,700,'Tre responsabilità','KB: fatti · editoriale: comunicazione · Sito: resa','editorial',{kicker:'COLLABORAZIONE TRA PROGETTI',text:'Il contratto di interscambio v0.2 è adottato per il passaggio editoriale → Sito. L’implementazione tecnica e la pubblicazione richiedono i mandati e gli stati d’uso pertinenti.',actions:[{label:'Passaggio → produzione web',to:'site'}]})
+],[flow(510,330,730,330),flow(1070,330,1290,330),flow(1460,425,1460,605),flow(1290,700,1070,700),flow(730,700,510,700),flow(900,605,900,425,'governa','loop')]);
+scenes.birth=arch('birth','Caso editoriale · Percorso nascita','editorial',[
+ card('bi-kb',340,350,'Conoscenza canonica','Schede KB pertinenti e riferimenti fra domini','editorial',{kicker:'FONDAMENTO ESTERNO',text:'I testi recuperano dalla KB soltanto la conoscenza sostenuta, con stati, condizioni e limiti. Non si mantiene una copia fattuale autonoma.',actions:[{label:'Vai al modello KB',to:'kb-domains'}]}),
+ card('bi-corpus',900,350,'11 unità editoriali','Corpus integrato e riutilizzabile','editorial',{kicker:'SORGENTE COMUNICATIVA',text:'Le undici unità editoriali sono presenti nel corpus. La loro granularità è autonoma rispetto alle schede KB e alle pagine finali.'}),
+ card('bi-view',1460,350,'Home + otto pagine','Prima vista composta per il sito','editorial',{kicker:'VISTA INTERNA',text:'La vista è redatta e revisionata dall’assistente. Richiede revisione umana competente; non risultano validazione clinica/organizzativa complessiva, test con utenti o autorizzazione all’uso pubblico.'}),
+ card('bi-manifest',1460,720,'Manifesto v1.0','Prima consegna proposta, identificata e versionata','editorial',{kicker:'PREPARATO · NON ANCORA CONSEGNATO',text:'Il manifesto è disponibile nel repository e identifica i nove testi della vista e la loro versione di riferimento. La sua preparazione non attesta consegna effettiva né accettazione tecnica.'}),
+ card('bi-accept',900,720,'Accettazione interna','Passaggio successivo al progetto Sito','editorial',{kicker:'NON RISULTA EFFETTUATA',text:'Il contratto v0.2 è adottato; il pacchetto resta proposto per valutazione interna. Il destinatario può valutarlo e preparare un piano; prove e trasformazioni richiedono un mandato distinto compatibile con lo stato d’uso.',actions:[{label:'Attraversa il confine → Sito',to:'site'}]}),
+ card('bi-public',340,720,'Uso pubblico','Verifiche competenti + autorizzazione specifica','editorial',{kicker:'CONDIZIONE ANCORA APERTA',text:'Corpus, vista e manifesto non sono automaticamente approvati per pubblicazione. Note interne e manifesto rimangono fuori dagli input di contenuto della generazione pubblica.'})
+],[flow(510,350,730,350),flow(1070,350,1290,350),flow(1460,445,1460,625),flow(1290,720,1070,720),flow(730,720,510,720,'prima dell’uso pubblico','loop')]);
+scenes.outputs=arch('outputs','Prodotti editoriali · formati e canali','editorial',[
+ card('out-corpus',830,285,'Corpus editoriale','Sorgente per le diverse composizioni','editorial',{kicker:'PATRIMONIO RIUTILIZZABILE',text:'Una stessa sorgente può alimentare materiali differenti. Ogni prodotto richiede selezione, revisione e condizioni di uso appropriate.'}),
+ card('out-booklet',330,570,'Opuscoli','Percorsi informativi articolati','editorial',{kicker:'PRODOTTO EDITORIALE',text:'Adattano il corpus a una lettura autonoma e sequenziale, con testi, raccordi e apparati adeguati.'}),
+ card('out-brochure',1340,520,'Brochure','Sintesi e presentazione di servizi','editorial',{kicker:'PRODOTTO EDITORIALE',text:'Selezioni sintetiche dei messaggi essenziali, pensate per un pubblico e un contesto di distribuzione.'}),
+ card('out-flyer',315,1040,'Volantini','Messaggi brevi e puntuali','editorial',{kicker:'PRODOTTO EDITORIALE',text:'Materiali sintetici, orientati a uno scopo informativo circoscritto.'}),
+ card('out-slides',870,985,'Presentazioni','Sequenze visive per incontri e formazione','editorial',{kicker:'PRODOTTO EDITORIALE',text:'Contenuti adattati all’esposizione orale, con sintesi e gerarchia visuale.'}),
+ circle('out-site',1510,1000,332,'Produzione web',{type:'route-band',theme:'site',kicker:'DESTINAZIONE DIGITALE',desc:'Vai agli strumenti per il Sito ULSS 2',to:'site'})
+],[wire('M730 390 Q550 450 400 490','progress'),wire('M950 390 Q1110 480 1220 510','progress'),wire('M725 370 Q320 650 315 900','internal'),wire('M845 415 Q860 710 870 850','internal'),wire('M980 390 Q1570 600 1510 850','site-flow')],
+'Opuscoli, brochure, volantini, presentazioni e contenuti web sono uscite parallele del corpus, non passaggi successivi. Sono formati realizzabili, non attestazioni che tutti siano già stati pubblicati.');
+scenes.site=arch('site','Produzione web · flusso e strumenti','site',[
+ circle('s-from-editorial',300,300,327,'Progetti editoriali',{type:'route-band',direction:'in',theme:'editorial',kicker:'IN INGRESSO · VISTE EDITORIALI',desc:'Risalire alla sorgente dei contenuti',to:'editorial'}),
+ card('s-data',800,300,'Dati e modelli condivisi','Contenuti strutturati e regole dei modelli','site',{kicker:'REPOSITORY SITO ULSS 2',text:'Una sorgente strutturata alimenta le pagine e le componenti riutilizzabili, secondo vincoli condivisi di contenuto e struttura.'}),
+ card('s-components',1330,300,'Template e componenti','Forme e regole di rappresentazione','site',{kicker:'BASE PER ENTRAMBE LE MODALITÀ',text:'Template e componenti definiscono il linguaggio comune, prima di utilizzare la modalità avanzata o la webapp. Le capacità effettive dei due strumenti sono differenti.'}),
+ card('s-builder',825,760,'Modalità avanzata + builder','Persona e agenti AI; home e pagine tematiche','site',{kicker:'PERCORSO 1',to:'site-process'}),
+ card('s-webapp',1410,760,'Webapp dedicata','Editor visuale; pagine tematiche','site',{kicker:'PERCORSO 2',to:'site-process'}),
+ card('s-manuals',310,925,'Manuali e manutenzione','Uso, sviluppo e continuità','site',{kicker:'PRESIDIO DEL PROGETTO',to:'site-maintenance'}),
+ card('s-output',1230,1090,'HTML e controlli','Verifica tecnica e passaggio al CMS','site',{kicker:'OUTPUT CONVERGENTE',text:'Le modalità producono HTML nei rispettivi perimetri. Controlli tecnici e verifica nel CMS non sostituiscono l’approvazione dei contenuti.'})
+],[flow(470,300,630,300,'','editorial-inflow'),flow(970,300,1160,300,'','progress'),wire('M1200 420 Q1030 570 825 645','progress'),wire('M1410 430 Q1490 560 1410 645','progress'),wire('M920 860 Q1000 1000 1120 1090','progress'),wire('M1410 875 Q1360 960 1330 1090','progress'),wire('M480 925 Q590 840 650 780','internal')],
+'I dati e i modelli condivisi alimentano template e componenti. Da qui si biforcano le due modalità, che convergono verso gli output HTML e i controlli.');
+scenes['site-process']=arch('site-process','Builder e webapp · capacità e interscambio','site',[
+ card('si-source',330,350,'Dati sorgenti','Pagine + dati comuni del repository','site',{kicker:'SORGENTE DEL BUILDER',text:'Gli YAML sorgenti mantengono riferimenti ai dati condivisi. Il builder risolve, valida e prepara il rendering.'}),
+ card('si-build',880,350,'Builder con supporto AI','Risoluzione → validazione → rendering','site',{kicker:'MODALITÀ AVANZATA',text:'ChatGPT supporta analisi e mandati; agenti AI assistono gli interventi e le verifiche autorizzate nel repository. Il builder genera home-tematica e pagina-tematica.'}),
+ card('si-html',1450,530,'HTML per il CMS','Output da controllare nella destinazione','site',{kicker:'RISULTATO COMUNE',text:'Entrambi i percorsi generano HTML nei casi supportati, condividendo modello e rendering pertinenti. I controlli automatici non certificano l’intera pagina o il comportamento del CMS.'}),
+ card('si-resolved',330,730,'YAML risolto','Pagina autonoma materializzata','site',{kicker:'FORMATO DI INTERSCAMBIO',text:'Contiene i dati necessari senza dipendere da common o raccolte FAQ esterne. È importabile nella webapp per pagina-tematica. Non esiste sincronizzazione inversa automatica ai sorgenti.'}),
+ card('si-app',880,730,'Webapp standalone','Compila/importa → modifica → esporta YAML e HTML','site',{kicker:'SOLO PAGINA-TEMATICA',text:'La webapp lavora sul modello materializzato, può creare una pagina attraverso l’interfaccia e salva il lavoro in YAML. Non importa home-tematica e non sostituisce il builder canonico.'})
+],[flow(500,350,710,350),wire('M1050 350 Q1240 350 1300 450','progress'),flow(330,445,330,635,'materializzazione'),flow(500,730,710,730),wire('M1050 730 Q1260 730 1300 610','progress'),wire('M880 445 V635','loop','logica condivisa',920,550)]);
+scenes['site-maintenance']=arch('site-maintenance','Produzione web · manuali, controlli e manutenzione','site',[
+ card('sm-use',350,350,'Manuali operativi','Builder e webapp: uso e perimetri','site',{kicker:'PERSONE E STRUMENTI',text:'I manuali distinguono il lavoro sui sorgenti dal lavoro nell’editor visuale e indicano come generare, importare, esportare e verificare una pagina.'}),
+ card('sm-dev',920,350,'Continuità dello sviluppo','Architettura, sorgenti e workflow assistito','site',{kicker:'MANUALE SVILUPPATORE',text:'Il manuale conserva vincoli CMS, fonti di verità e relazioni tra strumenti. Le istruzioni estese del Progetto ChatGPT sono richiamate ma non conservate integralmente nel repository.'}),
+ card('sm-check',1490,350,'Controlli proporzionati','Build, fedeltà, navigazione e resa finale','site',{kicker:'VERIFICA',text:'Le verifiche dipendono dalla modifica: modello, builder, webapp e contenuti hanno controlli pertinenti. Responsive, accessibilità e comportamento finale richiedono verifica nel CMS.'}),
+ card('sm-regenerate',1210,730,'Rigenerare i derivati','Output HTML, runtime e standalone','site',{kicker:'MANUTENZIONE TECNICA',text:'Quando cambia una sorgente tecnica si rigenerano i derivati interessati; gli artefatti generati non si correggono manualmente.'}),
+ card('sm-boundary',620,730,'Coordinamento delle sorgenti','Modifiche comunicative → progetto editoriale','site',{kicker:'CONTRATTO DI INTERSCAMBIO',text:'Il contratto v0.2 distingue responsabilità tecniche e comunicative. La governance condivisa non risulta adottata da Sito ULSS 2.',actions:[{label:'Torna ai progetti editoriali',to:'editorial'}]})
+],[flow(520,350,750,350),flow(1090,350,1320,350),flow(1490,445,1300,635),flow(1040,730,790,730),wire('M620 825 Q120 825 350 450','loop')]);
+scenes.campaign=arch('campaign','Strategia di comunicazione · architettura in elaborazione','campaign',[
+ circle('c-from-kb',300,290,325,'Conoscenza aziendale',{type:'route-band',direction:'in',theme:'kb',kicker:'IN INGRESSO · SCHEDE CANONICHE',desc:'Risalire alla sorgente dei fatti',to:'kb'}),
+ card('c-needs',300,590,'Necessità comunicative','Bisogni di comunicazione e pubblici','campaign',{kicker:'INGRESSO CONCETTUALE',text:'Il ramo è facoltativo: può essere utile quando serve coordinare destinatari, tempi, canali o più progetti editoriali.'}),
+ card('c-mandate',300,890,'Indicazioni del committente','Obiettivi, priorità, risorse e vincoli','campaign',{kicker:'INGRESSO CONCETTUALE',text:'Le indicazioni del committente orientano il problema comunicativo. Non è documentato un workflow locale già adottato.'}),
+ card('c-strategy',880,590,'Elaborazione strategica','Coordinare obiettivi, destinatari e canali','campaign',{kicker:'PROGETTO FACOLTATIVO · IN STUDIO',text:'Architettura in fase di elaborazione strategica e architetturale. Non sono presentati come esistenti repository, governance locale o workflow approvati.',to:'campaign-scenario'}),
+ card('c-plan',1450,420,'Piano di comunicazione','Messaggi, fasi, canali e criteri di verifica','campaign',{kicker:'OUTPUT PREVISTO',text:'Risultato concettuale previsto: un piano proporzionato alla necessità. Non è qui attestato un prodotto già realizzato.'}),
+ card('c-brief',1450,790,'Brief esecutivi','Mandati per uno o più progetti editoriali','campaign',{kicker:'PASSAGGIO PREVISTO',text:'I brief orientano la successiva progettazione editoriale, senza sostituire corpus e redazione.',actions:[{label:'Vai ai progetti editoriali',to:'editorial'}]}),
+ circle('c-to-editor',885,1050,330,'Progetti editoriali',{type:'route-band',theme:'editorial',kicker:'CONSEGNA DEL BRIEF',desc:'Vai al progetto che realizza i contenuti',to:'editorial'})
+],[wire('M470 290 Q610 290 710 520','kb-inflow'),flow(470,590,710,590,'','optional'),wire('M470 890 Q610 890 710 660','optional'),wire('M1050 540 Q1170 420 1280 420','optional'),flow(1450,515,1450,695,'','optional'),wire('M1340 900 Q1100 1010 1050 1050','editorial-flow')],
+'La strategia è un passaggio facoltativo ancora in elaborazione. Il piano e i brief confluiscono nei progetti editoriali.');
+scenes['campaign-scenario']=arch('campaign-scenario','Strategia · scenario possibile, non progetto attuato','campaign',[
+ card('cs-input',350,370,'Esigenza: orientare all’uso','Esempio possibile sul Fascicolo Sanitario Elettronico','campaign',{kicker:'SCENARIO ILLUSTRATIVO',text:'Un possibile mandato potrebbe chiedere di rendere più comprensibile l’uso del FSE a pubblici diversi. L’esempio non attesta una campagna o un piano già approvati.'}),
+ card('cs-strategy',930,370,'Strategia e piano','Pubblici, messaggi, sequenza e canali','campaign',{kicker:'ELABORAZIONE IPOTETICA',text:'La conoscenza canonica viene selezionata per il problema comunicativo. Il piano potrebbe coordinare materiali web, sportelli e altre occasioni di orientamento.'}),
+ card('cs-brief',1490,370,'Brief per gli editori','Obiettivi e vincoli per le realizzazioni','campaign',{kicker:'OUTPUT IPOTETICO',text:'Uno o più brief potrebbero richiedere contenuti per pubblici e canali differenti, con gli stessi fatti governati.'}),
+ card('cs-editor',930,750,'Progettazione editoriale','Corpus e viste nei progetti competenti','editorial',{kicker:'CONFINE DI RESPONSABILITÀ',to:'editorial'})
+],[flow(520,370,760,370,'','optional'),flow(1100,370,1320,370,'','optional'),wire('M1490 465 Q1490 750 1100 750','editorial-flow','brief → redazione',1230,720)]);
+scenes['kb-domains']=arch('kb-domains','Schede canoniche · modello e riuso','kb',[
+ card('kc-unit',340,350,'Unità di conoscenza','Schede informative e operative','kb',{kicker:'MODELLO CANONICO',text:'Unità autonome e collegabili, organizzate per funzione e domini. Le cartelle organizzano il lavoro; tassonomia e metadati classificano la conoscenza.'}),
+ card('kc-meta',900,350,'Metadati e relazioni','Identità, ritrovabilità e collegamenti','kb',{kicker:'STRUTTURA',text:'ID, titoli, sintesi, parole chiave, sinonimi e relazioni favoriscono recupero e riuso. Le responsabilità e le fonti rendono possibile la manutenzione.'}),
+ card('kc-state',1460,350,'Fonti, stati e limiti','Conoscenza sostenuta e condizioni distinguibili','kb',{kicker:'AFFIDABILITÀ',text:'La scheda conserva provenienza, validazione, limiti e condizioni. Essere nel repository non implica che ogni contenuto sia approvato per ogni uso.'}),
+ card('kc-views',1180,730,'Profili e viste controllate','Selezione per destinazione e delivery','kb',{kicker:'DISTRIBUZIONE',text:'Le viste mantengono tracciabilità e dipendenza dalla sorgente; non introducono nuova conoscenza e non diventano copie autonome.',actions:[{label:'Distribuzione H-Farm',to:'kb-hfarm'},{label:'Passaggio → editoriale',to:'editorial'}]}),
+ card('kc-maintain',620,730,'Manutenzione e dubbio','Riscontri → riesame della sorgente','kb',{kicker:'RITORNO AL CANONICO',text:'Problemi di contenuto o recupero si affrontano nella scheda, nei metadati o nelle regole di esportazione competenti.',actions:[{label:'Ciclo del dubbio',to:'doubt'}]})
+],[flow(510,350,730,350),flow(1070,350,1290,350),flow(1460,445,1260,635),flow(1010,730,790,730),wire('M620 825 Q120 825 340 450','loop')]);
+// Add the feedback return to the existing knowledge cycle without changing its engine.
+scenes.knowledge.links.push(wire('M1585 675 Q1585 850 905 850 Q225 850 225 675','loop','riesame della sorgente',860,830));
+
+const sceneTheme={map:'map',kb:'kb',knowledge:'kb',doubt:'kb','kb-inputs':'kb','kb-domains':'kb','kb-roles':'kb','kb-governance':'kb','kb-hfarm':'kb',campaign:'campaign',editorial:'editorial','editorial-process':'editorial',birth:'editorial',outputs:'editorial',site:'site','site-process':'site',gov:'governance',learning:'governance',experience:'governance','gov-trace':'governance','editorial-governance':'editorial','site-maintenance':'site','campaign-scenario':'campaign'};
+const parentScene={kb:'map',campaign:'map',editorial:'map',site:'map',gov:'map','kb-inputs':'kb','kb-domains':'kb','kb-roles':'kb','kb-governance':'kb','kb-hfarm':'kb',knowledge:'kb',doubt:'kb',learning:'gov',experience:'gov','editorial-process':'editorial',birth:'editorial',outputs:'editorial','site-process':'site','gov-trace':'gov','editorial-governance':'editorial','site-maintenance':'site','campaign-scenario':'campaign'};
+const sceneRoutes={
+ kb:[['Acquisizione','kb-inputs'],['Modello canonico','kb-domains'],['Viste H-Farm','kb-hfarm']],
+ 'kb-inputs':[['Ciclo della conoscenza','knowledge'],['Schede canoniche','kb-domains']],
+ 'kb-domains':[['Ciclo del dubbio','doubt'],['Viste H-Farm','kb-hfarm'],['Progetto editoriale','editorial']],
+ 'kb-roles':[['Ciclo della conoscenza','knowledge'],['Torna alla KB','kb']],
+ 'kb-governance':[['Governance condivisa (adesione potenziale)','gov'],['Ciclo della conoscenza','knowledge']],
+ 'kb-hfarm':[['Schede canoniche','kb-domains'],['Torna alla KB','kb']],
+ knowledge:[['Modello delle schede canoniche','kb-domains'],['Ciclo del dubbio','doubt']],
+ doubt:[['Schede canoniche','kb-domains'],['Ciclo della conoscenza','knowledge']],
+ 'campaign-scenario':[['Strategia','campaign'],['Brief → editoriale','editorial']],
+ 'gov-trace':[['Apprendimento','learning'],['Governance','gov']],
+ 'editorial-governance':[['Governance condivisa','gov'],['Progettazione editoriale','editorial']],
+ 'site-maintenance':[['Produzione web','site']],
+ campaign:[['Scenario possibile','campaign-scenario'],['Conoscenza aziendale','kb'],['Brief → progetti editoriali','editorial']],
+ editorial:[['Conoscenza aziendale','kb'],['Prodotti editoriali','outputs'],['Produzione web','site'],['Governance condivisa','gov']],
+ 'editorial-process':[['Prodotti e canali','outputs'],['Produzione web','site']],
+ birth:[['Corpus e riuso','editorial-process'],['Produzione web','site']],
+ outputs:[['Produzione web','site'],['Torna ai progetti editoriali','editorial']],
+ site:[['Contenuti ← editoriale','editorial'],['Manuali e manutenzione','site-maintenance']],
+ 'site-process':[['Progettazione editoriale','editorial'],['Produzione web','site']],
+ gov:[['Apprendimento','learning'],['Esperienza','experience'],['Tracciabilità','gov-trace'],['Adesione: Percorso nascita','editorial-governance']],
+ learning:[['Memoria delle esperienze','experience'],['Governance condivisa','gov']],
+ experience:[['Ciclo dell’apprendimento','learning'],['Governance condivisa','gov']]
+};
+
+function updateRoutes(){
+ const dock=$('routes'),area=$('routeActions'),items=sceneRoutes[current]||[];
+ dock.hidden=items.length===0;area.replaceChildren();
+ for(const [label,to] of items){const b=document.createElement('button');b.type='button';b.textContent=label+' ↗';b.addEventListener('click',()=>navigateTo(to));area.appendChild(b)}
+}
+
+let activeScene;let current='map',trail=['map'],nodesByID=new Map(),focusedId='kb',cam={x:0,y:0,scale:1},moving=false,isSwitching=false,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let pointer=null,lastDrag=0,selected=null;let initializing=true;
+const touchPoints=new Map();let pinch=null,lastPinchAt=0;
+let elasticMotion=true,elasticIntensity=1.20;
+// Moto acquatico: ciascun nucleo resta ancorato alla sua posizione, ma segue
+// una corrente propria. Ritardo, direzione, frequenza e ritorno variano per nodo.
+// La cinematica della telecamera resta separata; tutti i collegamenti seguono gli ancoraggi mobili.
+let dynamicNodes=new Map(),dynamicLinks=[],physicsFrame=0,physicsTime=0,waterClock=0,releaseAt=0;
+const SETTLE_MS=2050;
+const DRIFT_MAX_PX=152,SPRING_EPS=.085;
+function hashFloat(id,salt){
+  let h=2166136261;
+  for(const ch of id+':'+salt){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}
+  return (h>>>0)/4294967295;
+}
+function setupDynamics(scene){
+  cancelAnimationFrame(physicsFrame);physicsFrame=0;physicsTime=0;waterClock=0;releaseAt=0;
+  dynamicNodes=new Map();dynamicLinks=[];
+  const orbs=[...world.querySelectorAll('.orb')];
+  for(const n of scene.nodes){
+    const el=orbs.find(b=>b.dataset.id===n.id);
+    const seed=hashFloat(n.id,'main'),seed2=hashFloat(n.id,'secondary');
+    dynamicNodes.set(n.id,{
+      x:0,y:0,vx:0,vy:0,followX:0,followY:0,energy:0,releaseX:0,releaseY:0,releaseVX:0,releaseVY:0,releaseEnergy:0,
+      // Pochi cicli al minuto: languido, volutamente non sincronizzato.
+      frequency:.58+hashFloat(n.id,'freq')*.57,
+      stiffness:3.5+hashFloat(n.id,'spring')*3.2,
+      damping:1.55+hashFloat(n.id,'damping')*.88,
+      delay:.23+hashFloat(n.id,'delay')*.48,
+      phase:hashFloat(n.id,'phase')*Math.PI*2,
+      phase2:hashFloat(n.id,'phase2')*Math.PI*2,
+      angle:(seed*2-1)*1.12,
+      gain:.66+seed2*.68,
+      swirl:29+hashFloat(n.id,'swirl')*39,
+      n,el
+    });
+  }
+  const paths=[...world.querySelectorAll('.wires > path')];
+  const labels=[...world.querySelectorAll('.wires > text')];
+  const nearest=p=>{
+    let target=null,best=Infinity;
+    for(const n of scene.nodes){const d=(p.x-n.x)**2+(p.y-n.y)**2;if(d<best){target=n.id;best=d}}
+    return target;
+  };
+  for(const [index,link] of (scene.links||[]).entries()){
+    const el=paths[index];if(!el)continue;
+    const full=el.getTotalLength();
+    const curve=/[CQ]/i.test(link.d),count=curve?34:14;
+    const samples=Array.from({length:count},(_,i)=>{
+      const t=i/(count-1),pt=el.getPointAtLength(full*t);
+      return {x:pt.x,y:pt.y,t};
+    });
+    const label=link.label?labels.find(x=>x.textContent===link.label):null;
+    const mapPairs=[['kb','editorial'],['kb','strategy'],['strategy','editorial'],['editorial','web']];
+    const [from,to]=scene.id==='map'?mapPairs[index]:link.fromId&&link.toId?[link.fromId,link.toId]:[nearest(samples[0]),nearest(samples.at(-1))];
+    dynamicLinks.push({el,samples,original:link.d,from,to,archBend:scene.scattered?link.bend:null,label,
+      labelX:label?Number(label.getAttribute('x')):0,labelY:label?Number(label.getAttribute('y')):0});
+  }
+}
+function updateDynamicLinks(){
+  for(const l of dynamicLinks){
+    const a=dynamicNodes.get(l.from),b=dynamicNodes.get(l.to);
+    if(!a||!b)continue;
+    if(l.archBend!==null && l.archBend!==undefined){
+      const curA={id:l.from,x:a.n.x+a.x,y:a.n.y+a.y,size:a.n.size,type:a.n.type};
+      const curB={id:l.to,x:b.n.x+b.x,y:b.n.y+b.y,size:b.n.size,type:b.n.type};
+      const d=edgeCurve(curA,curB,l.archBend);
+      l.el.style.opacity=d?'':'0';
+      if(d)l.el.setAttribute('d',d);
+      if(l.label){
+        l.label.setAttribute('x',((curA.x+curB.x)/2).toFixed(2));
+        l.label.setAttribute('y',((curA.y+curB.y)/2-20).toFixed(2));
+      }
+    }else{
+      if(Math.abs(a.x)+Math.abs(a.y)+Math.abs(b.x)+Math.abs(b.y)<.008){
+        if(l.el.getAttribute('d')!==l.original)l.el.setAttribute('d',l.original);
+      }else{
+        const points=l.samples.map(p=>{
+          const m=p.t*p.t*(3-2*p.t);
+          return {x:p.x+a.x+(b.x-a.x)*m,y:p.y+a.y+(b.y-a.y)*m};
+        });
+        l.el.setAttribute('d',smoothSpline(points));
+      }
+      if(l.label){
+        l.label.setAttribute('x',(l.labelX+(a.x+b.x)/2).toFixed(2));
+        l.label.setAttribute('y',(l.labelY+(a.y+b.y)/2).toFixed(2));
+      }
+    }
+  }
+}
+
+function resetDynamics(){
+  cancelAnimationFrame(physicsFrame);physicsFrame=0;physicsTime=0;waterClock=0;releaseAt=0;
+  for(const n of dynamicNodes.values()){
+    n.x=n.y=n.vx=n.vy=n.followX=n.followY=n.energy=0;
+    if(n.el){n.el.style.left=n.n.x+'px';n.el.style.top=n.n.y+'px';n.el.style.removeProperty('--tilt')}
+  }
+  updateDynamicLinks();
+}
+function animateDynamics(time){
+  physicsFrame=0;
+  if(reduce||!elasticMotion){resetDynamics();return}
+  const dt=Math.min(.040,Math.max(.008,(time-(physicsTime||time-16))/1000));
+  physicsTime=time;waterClock+=dt;
+  const settling=Boolean(releaseAt&&!pointer);
+  const elapsed=settling?Math.max(0,time-releaseAt):0;
+  if(settling&&elapsed>=SETTLE_MS){resetDynamics();return;}
+  // Riassestamento morbido ma limitato a circa due secondi.
+  const releaseProgress=settling?Math.min(1,elapsed/SETTLE_MS):0;
+  const freshness=pointer&&pointer.moved?Math.exp(-Math.max(0,time-pointer.lastT-55)/160):0;
+  const inputX=pointer?pointer.velocityX*freshness:0;
+  const inputY=pointer?pointer.velocityY*freshness:0;
+  const inputSpeed=Math.hypot(inputX,inputY);
+  const amp=elasticIntensity;
+  const max=DRIFT_MAX_PX*amp*(vw()<620?.76:1);
+  let active=settling||Boolean(pointer&&pointer.moved);
+  for(const n of dynamicNodes.values()){
+    // Ogni corrente riceve l'impulso con il proprio ritardo, anche quando il dito si ferma.
+    const blend=1-Math.exp(-dt/n.delay);
+    n.followX+=(inputX-n.followX)*blend;
+    n.followY+=(inputY-n.followY)*blend;
+    // Il vortice impiega molto più tempo a svanire dell'input.
+    const desiredEnergy=Math.min(1, inputSpeed*2.0);
+    const energyTau=desiredEnergy>n.energy?.34:(.42+n.delay*.27);
+    n.energy+=(desiredEnergy-n.energy)*(1-Math.exp(-dt/energyTau));
+    if(settling){
+      // Interpolazione quintica con posizione e velocità terminale nulle.
+      // Non c'è una frenata tardiva né uno scatto all'azzeramento.
+      const p=releaseProgress,q=1-p;
+      const remaining=1-(10*p*p*p-15*p*p*p*p+6*p*p*p*p*p);
+      const velocityShape=p*q*q*q;
+      const gentleSwell=p*p*q*q;
+      const duration=SETTLE_MS/1000;
+      const oldX=n.x,oldY=n.y;
+      const sway=n.releaseEnergy*n.swirl*amp*.95*gentleSwell/cam.scale;
+      n.x=n.releaseX*remaining+n.releaseVX*duration*velocityShape+sway*Math.sin(n.phase);
+      n.y=n.releaseY*remaining+n.releaseVY*duration*velocityShape+sway*Math.cos(n.phase2);
+      n.vx=(n.x-oldX)/dt;n.vy=(n.y-oldY)/dt;
+      n.followX=0;n.followY=0;n.energy=n.releaseEnergy*remaining;
+    }else{
+      const baseX=-n.followX*213*amp*n.gain;
+      const baseY=-n.followY*213*amp*n.gain;
+      const cs=Math.cos(n.angle),sn=Math.sin(n.angle);
+      const swirl=n.swirl*amp*n.energy;
+      const theta=waterClock*n.frequency+n.phase;
+      const theta2=waterClock*(n.frequency*.79)+n.phase2;
+      // Durante il trascinamento, ciascun nucleo segue una corrente distinta.
+      const targetX=clamp((baseX*cs-baseY*sn)+Math.sin(theta)*swirl,-max,max)/cam.scale;
+      const targetY=clamp((baseX*sn+baseY*cs)+Math.cos(theta2)*swirl,-max,max)/cam.scale;
+      n.vx+=(n.stiffness*(targetX-n.x)-n.damping*n.vx)*dt;
+      n.vy+=(n.stiffness*(targetY-n.y)-n.damping*n.vy)*dt;
+      n.x+=n.vx*dt;n.y+=n.vy*dt;
+    }
+    const limit=max/cam.scale*1.06;
+    if(Math.abs(n.x)>limit){n.x=Math.sign(n.x)*limit;n.vx*=.18}
+    if(Math.abs(n.y)>limit){n.y=Math.sign(n.y)*limit;n.vy*=.18}
+    n.el.style.left=(n.n.x+n.x).toFixed(2)+'px';
+    n.el.style.top=(n.n.y+n.y).toFixed(2)+'px';
+    // Rotazione gentile: non ruotare velocemente il testo.
+    const tilt=clamp((n.y*.38-n.x*.24)*cam.scale*.065,-4.1,4.1);
+    n.el.style.setProperty('--tilt',tilt.toFixed(2)+'deg');
+    const pixelMotion=(Math.hypot(n.x,n.y)+Math.hypot(n.vx,n.vy)*.2)*cam.scale;
+    if(pixelMotion>SPRING_EPS||Math.hypot(n.followX,n.followY)>.003||n.energy>.008)active=true;
+  }
+  // Temporary clearance while the independent water currents move the circles.
+  // Only for newly scattered architecture scenes. Keep older KB/map untouched.
+  if(activeScene?.scattered && !settling){
+    const ns=[...dynamicNodes.values()];
+    for(let pass=0;pass<4;pass++){
+      for(let i=0;i<ns.length;i++)for(let j=i+1;j<ns.length;j++){
+        const a=ns[i],b=ns[j];let dx=(b.n.x+b.x)-(a.n.x+a.x),dy=(b.n.y+b.y)-(a.n.y+a.y);
+        let d=Math.hypot(dx,dy),desired=(a.n.size+b.n.size)/2+ANIMATED_MIN_GAP;
+        if(d>=desired)continue;
+        if(d<.01){dx=1;dy=0;d=1;}
+        const push=(desired-d)*.51;
+        a.x-=dx/d*push;a.y-=dy/d*push;
+        b.x+=dx/d*push;b.y+=dy/d*push;
+      }
+    }
+    for(const n of ns){
+      n.el.style.left=(n.n.x+n.x).toFixed(2)+'px';
+      n.el.style.top=(n.n.y+n.y).toFixed(2)+'px';
+    }
+  }
+  updateDynamicLinks();
+  if(active)physicsFrame=requestAnimationFrame(animateDynamics);
+  else{physicsTime=0;resetDynamics()}
+}
+function startDynamics(){
+  if(reduce||!elasticMotion)return;
+  if(!physicsFrame)physicsFrame=requestAnimationFrame(animateDynamics);
+}
+function vw(){return stage.clientWidth}function vh(){return stage.clientHeight}
+function zoomBounds(){return {min:vw()<650?.8:.2,max:1.55}}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function fitScale(scene){
+ if(vw()<650)return 1;
+ const bounds=sceneBounds(scene);return Math.min((vw()-90)/bounds.w,(vh()-45)/bounds.h,1.08);
+}
+function sceneBounds(scene){const xs=scene.nodes.map(n=>[n.x-n.size/2,n.x+n.size/2]),ys=scene.nodes.map(n=>[n.y-(n.type==='route-band'?44:n.size/2),n.y+(n.type==='route-band'?44:n.size/2)]);let x0=Math.min(...xs.map(x=>x[0])),x1=Math.max(...xs.map(x=>x[1])),y0=Math.min(...ys.map(x=>x[0])),y1=Math.max(...ys.map(x=>x[1]));const svg=world.querySelector('.wires');if(vw()>=650&&svg){const b=svg.getBBox();x0=Math.min(x0,b.x);x1=Math.max(x1,b.x+b.width);y0=Math.min(y0,b.y);y1=Math.max(y1,b.y+b.height)}return {x:(x0+x1)/2,y:(y0+y1)/2,w:x1-x0,h:y1-y0}}
+function animateCamera(){world.style.transition=(reduce||initializing)?'none':'transform 1.25s cubic-bezier(.2,.74,.18,1), opacity .25s ease';applyCamera()}
+function centerCamera(x,y,scale){cam.scale=clamp(scale,zoomBounds().min,zoomBounds().max);cam.x=vw()/2-x*cam.scale;cam.y=vh()/2-y*cam.scale;animateCamera()}
+function applyCamera(){world.style.transform=`translate3d(${cam.x}px,${cam.y}px,0) scale(${cam.scale})`}
+function nodeMarkup(n){let cls=['orb',n.theme||'neutral',n.type||'']; if(n.direction==='in')cls.push('is-incoming'); if(n.id===focusedId) cls.push('is-focused');
+ const style=`left:${n.x}px;top:${n.y}px;--diameter:${n.size}px`;
+ const title=escapeHTML(n.title),desc=escapeHTML(n.desc||'');
+ return `<button type="button" class="${cls.join(' ')}" style="${style}" data-id="${n.id}" aria-label="Apri ${title}"><span class="orb-kicker">${escapeHTML(n.kicker||'ESPLORA')}</span><span class="orb-name">${title}</span>${desc?`<span class="orb-desc">${desc}</span>`:''}${n.tag?`<span class="orb-tag ${n.tag.length>18?'orb-tag--long':''}">${escapeHTML(n.tag)}</span>`:''}<span class="click-cue">↗ esplora</span></button>`}
+function escapeHTML(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function buildWires(scene){const links=(scene.links||[]).map(l=>`<path class="${l.kind}" d="${l.d}" ${l.kind==='optional'?'marker-end="url(#arrAmber)"':l.kind==='direct'?'marker-end="url(#arrGreen)"':''}/>${l.label?`<text class="hint ${l.kind==='optional'?'amber-hint':''}" x="${l.lx}" y="${l.ly}">${escapeHTML(l.label)}</text>`:''}`).join('');return `<svg class="wires" aria-hidden="true" viewBox="0 0 ${STAGE_W} ${STAGE_H}"><defs><marker id="arrScene" viewBox="0 0 10 10" markerWidth="7" markerHeight="7" refX="9" refY="5" orient="auto"><path d="M0 1L9 5L0 9" fill="none" stroke="var(--sceneCore)" stroke-width="1.8"/></marker><marker id="arrGreen" viewBox="0 0 10 10" markerWidth="6" markerHeight="6" refX="8" refY="5" orient="auto"><path d="M0 1L9 5L0 9" fill="none" stroke="#65a695" stroke-width="1.6"/></marker><marker id="arrAmber" viewBox="0 0 10 10" markerWidth="6" markerHeight="6" refX="8" refY="5" orient="auto"><path d="M0 1L9 5L0 9" fill="none" stroke="#be9e61" stroke-width="1.6"/></marker></defs>${links}</svg>`}
+function updateSceneHeader(id){
+ const title=$('sceneTitle'),subtitle=$('sceneSubtitle');
+ if(id==='map'){
+   title.textContent='Una conoscenza, molte applicazioni.';
+   subtitle.textContent='Come sono costruiti i progetti, quali cicli li governano e come collaborano.';
+ }else{
+   const name=scenes[id].title.split(' · ')[0];
+   const detail=scenes[id].title.includes(' · ')?scenes[id].title.split(' · ').slice(1).join(' · '):'';
+   title.textContent=name;
+   subtitle.textContent=detail || 'Architettura, componenti e collegamenti';
+ }
+}
+function renderScene(id,opts={}){
+  current=id;updateSceneHeader(id);const source=scenes[id];
+  let scene=source;
+  if(vw()<650){
+    const diameter=Math.min(vw()-58,312),gap=45;
+    let cursorY=24;
+    const mobileNodes=source.nodes.map(n=>{
+      const band=n.type==='route-band',height=band?87:diameter;
+      const y=cursorY+height/2;cursorY+=height+gap;
+      return {...n,x:vw()/2,y,size:diameter,type:band?'route-band':'component'};
+    });
+    // La forma e il colore delle fasce di ingresso/uscita persistono anche su mobile.
+    // Non disegniamo una sequenza di frecce tra nodi che potrebbero essere rami alternativi.
+    scene={...source,nodes:mobileNodes,links:[]};
+  }
+  activeScene=scene;$('app').dataset.theme=sceneTheme[id]||'kb';focusedId=id==='map'?'kb':id==='kb'?'kb-canonical':(scene.nodes[0]?.id||'');
+  nodesByID=new Map(scene.nodes.map(n=>[n.id,n]));world.innerHTML=buildWires(scene)+scene.nodes.map(nodeMarkup).join('');setupDynamics(scene);
+  $('sceneHint').textContent=id==='map'?'TRASCINA PER ESPLORARE · CLICCA PER ENTRARE':'MUOVITI NELLA MAPPA · CLICCA PER APPROFONDIRE';
+  updateBread();updateFocus();updateRoutes();panel.hidden=true;
+  const nav=$('componentNav');nav.replaceChildren();scene.nodes.forEach((n,i)=>{const o=document.createElement('option');o.value=n.id;o.textContent=`${i+1} / ${scene.nodes.length} · ${n.title}`;nav.appendChild(o)});const f=fitScale(scene),bounds=sceneBounds(scene);if(vw()<650){focusedId=scene.nodes[0].id;updateFocus();centerCamera(scene.nodes[0].x,scene.nodes[0].y,1)}else centerCamera(bounds.x,bounds.y,f);
+}
+function updateBread(){const container=$('breadcrumb');container.replaceChildren();const path=trail.length>3?[trail[0],...trail.slice(-2)]:trail;path.forEach((id,i)=>{
+ if(i){const sep=document.createElement('span');sep.className='sep';sep.textContent=(trail.length>3&&i===1)?'···':(parentScene[id]===path[i-1]?'›':'↗');container.appendChild(sep)}
+ const b=document.createElement('button');b.type='button';b.textContent=i===0?'Mappa':scenes[id].title;b.className=i===path.length-1?'current':'';b.disabled=i===path.length-1;b.addEventListener('click',()=>navigateTo(id,true));container.appendChild(b)
+});$('back').disabled=trail.length===1;$('back').style.opacity=trail.length===1?'.4':'1'}
+function updateFocus(){if($('componentNav'))$('componentNav').value=focusedId;const n=nodesByID.get(focusedId);$('focusTitle').textContent=n?n.title:scenes[current].title;$('focusText').textContent=n?(n.desc||'Tocca per esplorare'):'Trascina per esplorare';for(const b of world.querySelectorAll('.orb'))b.classList.toggle('is-focused',b.dataset.id===focusedId)}
+function focusOn(n,changeScale=false){if(!n)return;focusedId=n.id;updateFocus();let s=cam.scale;if(changeScale)s=clamp(s*1.045,zoomBounds().min,Math.min(zoomBounds().max,1.03));centerCamera(n.x,n.y,s)}
+function navigateTo(id,existing=false){if(!scenes[id]||isSwitching)return;if(id===current){panel.hidden=true;return}resetDynamics();
+ isSwitching=true;panel.hidden=true;const pos=nodesByID.get(focusedId);if(pos){cam.x=vw()/2-pos.x*cam.scale*1.14;cam.y=vh()/2-pos.y*cam.scale*1.14;cam.scale*=1.14;animateCamera()}
+ const ms=reduce?10:270;world.classList.add('swapping');setTimeout(()=>{
+   if(existing){const index=trail.lastIndexOf(id);trail=trail.slice(0,index+1)}else if(id==='map'){trail=['map']}else trail.push(id);
+   renderScene(id);world.classList.add('swapping');requestAnimationFrame(()=>requestAnimationFrame(()=>world.classList.remove('swapping')));
+   isSwitching=false;
+ },ms);
+}
+function clickNode(n){if(!n||isSwitching)return;selected=n;focusedId=n.id;updateFocus();if(n.to){navigateTo(n.to);return}focusOn(n,true);openPanel(n)}
+function openPanel(n){const info=n.detail||{text:n.desc||'Approfondimento da definire.'},actions=n.actions||[];
+ let html=`<div class="topline">${escapeHTML(n.kicker||'Approfondimento')}</div><h2>${escapeHTML(n.title)}</h2>`;
+ if(info.text)html+=`<p>${escapeHTML(info.text)}</p>`;
+ if(info.technical)html+=`<div class="panel-rule"></div><p class="technical">${escapeHTML(info.technical)}</p>`;
+ if(current==='campaign'||current==='campaign-scenario')html+=`<div class="notice">Funzione in elaborazione strategica e architetturale</div>`;
+ if(actions.length){html+='<div class="panel-rule"></div>';for(const [i,a] of actions.entries())html+=`<button type="button" class="panel-link" data-action="${i}"><span>${escapeHTML(a.label)}</span><span>↗</span></button>`}
+ panelBody.innerHTML=html;panel.hidden=false;panelBody.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>{const a=actions[Number(b.dataset.action)];if(a.to)navigateTo(a.to)}));
+}
+function stagePoint(e){const r=stage.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
+function beginPinch(){
+  const touches=[...touchPoints.values()];if(touches.length<2)return;
+  const a=touches[0],b=touches[1],r=stage.getBoundingClientRect();
+  const cx=(a.x+b.x)/2-r.left,cy=(a.y+b.y)/2-r.top;
+  const distance=Math.max(16,Math.hypot(a.x-b.x,a.y-b.y));
+  pinch={distance,scale:cam.scale,worldX:(cx-cam.x)/cam.scale,worldY:(cy-cam.y)/cam.scale};
+  pointer=null;releaseAt=0;stage.classList.remove('is-dragging');
+  world.style.transition='none';resetDynamics();
+}
+function updatePinch(){
+  if(!pinch||touchPoints.size<2)return;
+  const [a,b]=[...touchPoints.values()],r=stage.getBoundingClientRect();
+  const cx=(a.x+b.x)/2-r.left,cy=(a.y+b.y)/2-r.top;
+  const distance=Math.max(16,Math.hypot(a.x-b.x,a.y-b.y));
+  cam.scale=clamp(pinch.scale*(distance/pinch.distance),zoomBounds().min,zoomBounds().max);
+  cam.x=cx-pinch.worldX*cam.scale;
+  cam.y=cy-pinch.worldY*cam.scale;
+  applyCamera();
+}
+function pointerDown(e){
+  if(e.button!==0&&e.pointerType==='mouse')return;
+  if(isSwitching||!$('helpDialog').hidden)return;
+  if(e.pointerType==='touch'){
+    touchPoints.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(touchPoints.size>=2){beginPinch();try{stage.setPointerCapture(e.pointerId)}catch{}return;}
+  }
+  releaseAt=0;
+  pointer={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,lastT:performance.now(),velocityX:0,velocityY:0,moved:false,target:e.target.closest('.orb')?.dataset.id};
+  try{stage.setPointerCapture(e.pointerId)}catch{}
+}
+function pointerMove(e){
+  if(touchPoints.has(e.pointerId)){
+    touchPoints.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pinch){updatePinch();return;}
+  }
+  if(!pointer||pointer.id!==e.pointerId)return;
+  const dx=e.clientX-pointer.lastX,dy=e.clientY-pointer.lastY,dist=Math.hypot(e.clientX-pointer.x,e.clientY-pointer.y);
+  if(dist>5)pointer.moved=true;
+  if(pointer.moved){
+    stage.classList.add('is-dragging');world.style.transition='none';cam.x+=dx;cam.y+=dy;applyCamera();
+    const now=performance.now(),dt=Math.max(8,now-pointer.lastT);
+    pointer.velocityX=.58*pointer.velocityX+.42*dx/dt;pointer.velocityY=.58*pointer.velocityY+.42*dy/dt;
+    pointer.lastT=now;startDynamics();
+  }
+  pointer.lastX=e.clientX;pointer.lastY=e.clientY;
+}
+function finishPointer(e,cancelled=false){
+  touchPoints.delete(e.pointerId);
+  try{if(stage.hasPointerCapture(e.pointerId))stage.releasePointerCapture(e.pointerId)}catch{}
+  if(pinch){
+    lastPinchAt=performance.now();
+    if(touchPoints.size<2){
+      pinch=null;
+      // Se resta un dito, è possibile proseguire con un trascinamento,
+      // senza che il successivo rilascio apra accidentalmente una bolla.
+      if(touchPoints.size===1){
+        const [id,t]=[...touchPoints][0];
+        pointer={id,x:t.x,y:t.y,lastX:t.x,lastY:t.y,lastT:performance.now(),velocityX:0,velocityY:0,moved:true,target:null,afterPinch:true};
+      }else pointer=null;
+    }else beginPinch();
+    return;
+  }
+  if(!pointer||pointer.id!==e.pointerId)return;
+  const p=pointer;pointer=null;stage.classList.remove('is-dragging');
+  if(cancelled){resetDynamics();return;}
+  if(p.moved&&elasticMotion&&!reduce&&!p.afterPinch){
+    releaseAt=performance.now();
+    for(const n of dynamicNodes.values()){
+      const residual=Math.min(1,Math.hypot(n.followX,n.followY)*1.3);
+      n.energy=Math.max(n.energy,residual*.7);
+      n.releaseX=n.x;n.releaseY=n.y;
+      n.releaseVX=clamp(n.vx,-95,95);n.releaseVY=clamp(n.vy,-95,95);
+      n.releaseEnergy=n.energy;
+    }
+  }
+  if(p.moved&&!p.afterPinch)startDynamics();
+  if(!p.moved){
+    if(performance.now()-lastPinchAt<420)return;
+    const n=nodesByID.get(p.target);if(n)clickNode(n);else if(!panel.hidden)panel.hidden=true;
+    return;
+  }
+  lastDrag=performance.now();
+  if(p.afterPinch){animateCamera();return;}
+  if(!reduce){cam.x+=clamp(p.velocityX*105,-100,100);cam.y+=clamp(p.velocityY*105,-100,100)}
+  const middle={x:(vw()/2-cam.x)/cam.scale,y:(vh()/2-cam.y)/cam.scale};let closest=null,best=Infinity;
+  for(const n of activeScene.nodes){
+    const d=Math.hypot((n.x-middle.x)*cam.scale,(n.y-middle.y)*cam.scale);
+    if(d<best){best=d;closest=n}
+  }
+  if(closest&&best<Math.min(vw(),vh())*.68)focusOn(closest);else animateCamera();
+}
+function pointerUp(e){finishPointer(e,false)}
+function pointerCancel(e){finishPointer(e,true)}
+function scaleAt(factor,pivotX=vw()/2,pivotY=vh()/2){const before={x:(pivotX-cam.x)/cam.scale,y:(pivotY-cam.y)/cam.scale};cam.scale=clamp(cam.scale*factor,zoomBounds().min,zoomBounds().max);cam.x=pivotX-before.x*cam.scale;cam.y=pivotY-before.y*cam.scale;animateCamera()}
+function returnHome(){if(current==='map'){panel.hidden=true;renderScene('map')}else navigateTo('map',true)}
+$('componentNav').addEventListener('change',e=>focusOn(nodesByID.get(e.target.value)));
+$('reset').addEventListener('click',returnHome);
+$('back').addEventListener('click',()=>{if(trail.length>1)navigateTo(trail[trail.length-2],true);else if(!panel.hidden)panel.hidden=true});
+$('governance').addEventListener('click',()=>navigateTo('gov'));
+$('panelClose').addEventListener('click',()=>panel.hidden=true);
+$('zoomIn').addEventListener('click',()=>scaleAt(1.17));$('zoomOut').addEventListener('click',()=>scaleAt(1/1.17));
+$('recenter').addEventListener('click',()=>{const n=nodesByID.get(focusedId);if(n)focusOn(n);else renderScene(current)});
+$('helpBtn').addEventListener('click',()=>{$('helpDialog').hidden=false});$('helpClose').addEventListener('click',()=>{$('helpDialog').hidden=true});
+$('helpDialog').addEventListener('click',e=>{if(e.target===$('helpDialog'))$('helpDialog').hidden=true});
+$('reducedMotion').checked=reduce;$('reducedMotion').addEventListener('change',e=>{reduce=e.target.checked;if(reduce)resetDynamics()});
+$('elasticMotion').addEventListener('change',e=>{elasticMotion=e.target.checked;if(!elasticMotion)resetDynamics()});
+$('elasticIntensity').addEventListener('input',e=>{elasticIntensity=Number(e.target.value)/100;$('elasticValue').value=e.target.value+'%';});
+stage.addEventListener('pointerdown',pointerDown);stage.addEventListener('pointermove',pointerMove);stage.addEventListener('pointerup',pointerUp);stage.addEventListener('pointercancel',pointerCancel);
+stage.addEventListener('wheel',e=>{
+ if(isSwitching || !$('helpDialog').hidden)return;
+ if(Math.abs(e.deltaX)>Math.abs(e.deltaY)*1.45 && !e.ctrlKey && !e.metaKey)return;
+ e.preventDefault();
+ const unit=e.deltaMode===1?16:e.deltaMode===2?vh():1;
+ const delta=clamp(e.deltaY*unit,-115,115);
+ const r=stage.getBoundingClientRect();
+ const pivotX=e.clientX-r.left,pivotY=e.clientY-r.top;
+ const before={x:(pivotX-cam.x)/cam.scale,y:(pivotY-cam.y)/cam.scale};
+ cam.scale=clamp(cam.scale*Math.exp(-delta*.0020),zoomBounds().min,zoomBounds().max);
+ cam.x=pivotX-before.x*cam.scale;cam.y=pivotY-before.y*cam.scale;
+ world.style.transition='none';applyCamera();
+},{passive:false});
+world.addEventListener('focusin',e=>{const n=nodesByID.get(e.target.closest('.orb')?.dataset.id);if(n)focusOn(n)});
+world.addEventListener('click',e=>{if(e.detail===0){const n=nodesByID.get(e.target.closest('.orb')?.dataset.id);if(n)clickNode(n)}});
+window.addEventListener('keydown',e=>{if(!$('helpDialog').hidden){if(e.key==='Escape')$('helpDialog').hidden=true;return}if(e.target.matches('input,select,textarea'))return;if(e.target.matches('button')&&e.key!=='Escape'&&e.key!=='Backspace')return;
+ if(e.key==='Escape'||e.key==='Backspace'){e.preventDefault();if(!panel.hidden)panel.hidden=true;else if(trail.length>1)navigateTo(trail[trail.length-2],true)}
+ else if(e.key==='ArrowLeft'||e.key==='ArrowRight'||e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();cam.x+=(e.key==='ArrowLeft'?65:e.key==='ArrowRight'?-65:0);cam.y+=(e.key==='ArrowUp'?65:e.key==='ArrowDown'?-65:0);animateCamera()}
+ else if(e.key==='+'||e.key==='='){e.preventDefault();scaleAt(1.12)}else if(e.key==='-'){e.preventDefault();scaleAt(1/1.12)}
+});
+let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{const n=nodesByID.get(focusedId);renderScene(current)},120)});
+renderScene('map');initializing=false;
+window.__mappaDemo={get state(){return {scene:current,trail:[...trail],focusedId,scale:cam.scale,elasticMotion,elasticIntensity,offsets:Object.fromEntries([...dynamicNodes].map(([id,n])=>[id,{x:n.x,y:n.y}]))}},navigateTo,renderScene};
+})();
+</script>
+</body>
+</html>
